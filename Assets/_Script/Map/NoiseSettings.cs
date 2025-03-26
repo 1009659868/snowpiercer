@@ -6,6 +6,7 @@ public class NoiseSettings
 {
     public float scale ;
     public int octaves ;
+    public float amplitudes;
     [Range(0, 1)]
     public float persistance ;
     public float lacunarity ;

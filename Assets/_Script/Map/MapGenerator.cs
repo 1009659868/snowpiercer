@@ -21,11 +21,14 @@ public class MapGenerator : MonoBehaviour
     [Header("Generation Settings")]
     [SerializeField] private bool _generateOnStart = true;
     [SerializeField] private float _generationInterval = 0.000000001f;
-
-    //private float[,,] _terrainMap;
+    // 在MapGenerator类中添加高度控制参数
+    [Header("Height Settings")]
+    [SerializeField] private float _seaLevel = -2f;      // 海平面Y坐标
+    [SerializeField] private float _baseHeight = 0f;    // 基础高度偏移
+    [SerializeField] private float _heightScale = 1000f;   // 高度缩放系数
+    [SerializeField] private int _minWorldY=-3;
     private Vector3 _lastPlayerPosition;
     private Coroutine _generationCoroutine;
-    private Coroutine _unloadingCoroutine;
     public bool initedMap;
     private void Awake()
     {
@@ -48,7 +51,7 @@ public class MapGenerator : MonoBehaviour
     }
     private void Update()
     {
-        if (playerMoved()) { }
+        if (playerMoved()) {UpdateActiveChunks(); }
         //UpdateActiveChunks();
     }
     //初始化地图
@@ -104,9 +107,10 @@ public class MapGenerator : MonoBehaviour
         int unloadsPerFrame = 5; // 每帧最多卸载5个区块
         int unloadedCount = 0;
 
-        while(unloadedCount<chunksToUnload.Count){
+        while (unloadedCount < chunksToUnload.Count)
+        {
             int endIndex = Mathf.Min(unloadedCount + unloadsPerFrame, chunksToUnload.Count);
-        
+
             for (int i = unloadedCount; i < endIndex; i++)
             {
                 _chunkLoader.UnregisterChunk(chunksToUnload[i]);
@@ -163,6 +167,7 @@ public class MapGenerator : MonoBehaviour
                 yield return StartCoroutine(GenerateChunksAroundPosition(alignedGridPos));
                 yield return StartCoroutine(UnloadChunksOutsideLoadArea());
                 // 更新记录位置时保持原始坐标精度
+                if(Vector3.Distance(currentPlayerWorldPos,_lastPlayerPosition)>MyGrid._instance.largerCellSize.x*4)
                 _lastPlayerPosition = currentPlayerWorldPos;
             }
             yield return new WaitForSeconds(_generationInterval);
@@ -176,7 +181,7 @@ public class MapGenerator : MonoBehaviour
         const int chunksPerFrame = 4;
         int processed = 0;
         var chunksArray = chunksToGenerate.ToArray();
-        System.Array.Sort(chunksArray, (a, b) => 
+        System.Array.Sort(chunksArray, (a, b) =>
             Vector3.Distance(a, centerPosition).CompareTo(Vector3.Distance(b, centerPosition)));
 
         while (processed < chunksArray.Length)
@@ -188,6 +193,10 @@ public class MapGenerator : MonoBehaviour
                 if (!_chunkLoader.HasChunk(chunksArray[i]))
                 {
                     GenerateSingleChunk(chunksArray[i]);
+                }
+                else
+                {
+                    Debug.LogError("gen failed");
                 }
             }
 
@@ -217,7 +226,7 @@ public class MapGenerator : MonoBehaviour
                 if (!_chunkLoader.HasChunk(chunkPos) &&
                     Vector3.Distance(chunkPos, centerPosition) <= loadDistance * MyGrid._instance.largerCellSize.x)
                 {
-                    Debug.Log("Add ...");
+                    // Debug.Log("Add ...");
                     result.Add(chunkPos);
                 }
             }
@@ -233,85 +242,208 @@ public class MapGenerator : MonoBehaviour
         );
     }
     public IEnumerator ProcessChunkGeneration(Vector3 worldPosition)
-    { 
+    {
         yield return StartCoroutine(GenerateChunksAroundPosition(worldPosition));
     }
+    // 修改MapGenerator中的GenerateSingleChunk方法
     private void GenerateSingleChunk(Vector3 chunkWorldPosition)
     {
-        // 检查区块是否已存在
-        if (_chunkLoader.HasChunk(chunkWorldPosition))
-        {
-            return;
-        }
-        Vector3 chunkSize = MyGrid._instance.largerCellSize;
-        int waterLevel = 4;
-        int[,] actualWaterHeight = new int[(int)chunkSize.x, (int)chunkSize.z];
+        //生成地形包括平原,水洼,高山
+        if (_chunkLoader.HasChunk(chunkWorldPosition)) return;
 
-        for (int x = 0; x < chunkSize.x; x++)
+        // 获取区块边界范围（世界坐标）
+        Vector3 chunkStart = chunkWorldPosition - MyGrid._instance.largerCellSize * 0.5f;
+        Vector3 chunkEnd = chunkWorldPosition + MyGrid._instance.largerCellSize * 0.5f;
+
+        // 计算区块内小网格的起始和结束坐标
+        int startX = Mathf.FloorToInt(chunkStart.x / MyGrid._instance.detailCellSize.x);
+        int startZ = Mathf.FloorToInt(chunkStart.z / MyGrid._instance.detailCellSize.z);
+
+        int endX = Mathf.CeilToInt(chunkEnd.x / MyGrid._instance.detailCellSize.x);
+        int endZ = Mathf.CeilToInt(chunkEnd.z / MyGrid._instance.detailCellSize.z);
+
+        
+        // 三维遍历区块空间
+        for (int gridX = startX; gridX <= endX; gridX++)
         {
-            for (int z = 0; z < chunkSize.z; z++)
+            for (int gridZ = startZ; gridZ <= endZ; gridZ++)
             {
-                float worldX = chunkWorldPosition.x + x;
-                float worldZ = chunkWorldPosition.z + z;
+                // 计算世界XZ坐标
+                float worldX = gridX * MyGrid._instance.detailCellSize.x;
+                float worldZ = gridZ * MyGrid._instance.detailCellSize.z;
 
-                // 生成地形高度
-                //float noiseValue = Mathf.PerlinNoise(worldX * 0.1f, worldZ * 0.1f);
-                float noiseValue = _noiseGenerator.GetNoiseValue(new Vector3(worldX * 0.1f, 0, worldZ * 0.1f), NoiseType.Height_high);
-                Debug.Log("noiseValue:" + noiseValue);
-                int groundHeight = Mathf.FloorToInt(noiseValue * 10);
+                float combinNoise= _noiseGenerator.GetNoiseValue(new Vector3(worldX, 0, worldZ));
+                float heightNoise=_noiseGenerator.GetHeightNoise(new Vector3(worldX, 0, worldZ));
+                float moistureNoise = _noiseGenerator.GetMoistureNoise(new Vector3(worldX, 0, worldZ));
+                float temperatureNoise = _noiseGenerator.GetTemperatureNoise(new Vector3(worldX, 0, worldZ));
+                // Debug.Log("combinNoise:"+combinNoise);
+                // Debug.Log("heightNoise:"+heightNoise);
+                // 获取地表高度（使用多种噪声混合）
+                int surfaceHeight = Mathf.FloorToInt(_baseHeight + heightNoise * _heightScale);
 
-                bool isWater = groundHeight < waterLevel;
-                actualWaterHeight[x, z] = isWater ? waterLevel : -1;
-
-                // 生成方块
-                for (int y = 0; y < groundHeight; y++)
+                // Debug.Log("surfaceHeight:"+surfaceHeight);
+                // 从最低点到最高点遍历垂直方向
+                for (int worldY = _minWorldY; worldY <= surfaceHeight; worldY++)
                 {
-                    Vector3 blockPos = new Vector3(worldX, y - 4.5f, worldZ);
-                    // 添加方块存在检查
-                    if (!_chunkLoader.GetActiveBlocks().ContainsKey(
-                            MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(blockPos))
-                            )
-                        )
-                    {
-                        blockType type = DetermineBlockType(y, groundHeight, isWater);
-                        _chunkLoader.RegisterBlock(blockPos, type, GridType.DetailGrid);
-                    }
-                }
+                    Vector3 blockWorldPos = new Vector3(worldX, worldY-4.5f, worldZ);
 
-                // 补充水面
-                if (isWater)
-                {
-                    for (int y = groundHeight; y <= waterLevel; y++)
-                    {
-                        Vector3 waterPos = new Vector3(worldX, y - 4.5f, worldZ);
-                        if (!_chunkLoader.GetActiveBlocks().ContainsKey(
-                                MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(waterPos))
-                                )
-                            )
-                        {
-                            _chunkLoader.RegisterBlock(waterPos, blockType.Water, GridType.DetailGrid);
-                        }
+                    // 跳过已有方块
+                    if (_chunkLoader.HasBlock(blockWorldPos)) continue;
 
+                    //  跳过初始层
+                    if(worldY==_chunkLoader.GetPlayerPosition().y) continue;
+                    // Debug.Log("worldY:"+worldY);
+                    // 确定方块类型
+                    blockType type = DetermineBlockType(
+                        worldY,
+                        surfaceHeight,
+                        temperatureNoise,
+                        moistureNoise
+                    );
+
+                    // 注册非空气方块
+                    if (type != blockType.Air)
+                    {
+                        _chunkLoader.RegisterBlock(
+                            blockWorldPos,
+                            type,
+                            GridType.DetailGrid
+                        );
                     }
                 }
             }
         }
     }
-    private blockType DetermineBlockType(int currentY, int groundHeight, bool isWater)
+
+
+    private blockType DetermineBlockType(int currentHeight,int surfaceHeight,float temperature,float humidity)
     {
-        if (currentY >= groundHeight - 1)
+        // 全局参数（这些参数可根据需求配置或通过外部变量传入）
+        int seaLevel = (int)_seaLevel;               // 海平面高度，例如4
+        int surfaceLayerThickness = 4;          // 表层厚度（单位为方块高度）
+        float lowTemperatureThreshold = 0.3f;   // 温度较低的阈值
+        float lowHumidityThreshold = 0.3f;      // 湿度较低的阈值
+
+        // 1. 如果当前高度高于地表，则该位置为空气
+        if (currentHeight > surfaceHeight)
         {
-            return isWater ? blockType.Water : blockType.Grass;
+            return blockType.Air;
         }
-        else if (currentY >= groundHeight - 3)
+
+        // 2. 如果地表低于海平面，则说明整个区域处于水下
+        
+        if (currentHeight <= seaLevel)
         {
-            return blockType.Sand;
+            return blockType.Water;
+        }
+        
+        // 3. 表层：定义为从 (surfaceHeight - surfaceLayerThickness + 1) 到 surfaceHeight 的区间
+        if (currentHeight >= surfaceHeight - surfaceLayerThickness*MyGrid._instance.largerCellSize.y )
+        {
+            // Debug.Log("temperature:"+temperature);
+            // 当温度低时生成雪块
+            if (-temperature*100 < lowTemperatureThreshold)
+            {
+                return blockType.Stone;
+            }
+            // 当湿度低时生成沙块（干旱区域）
+            if (-humidity*100 < lowHumidityThreshold)
+            {
+                return blockType.Sand;
+            }
+            // 默认生成草块
+            return blockType.Grass;
         }
         else
-        {
+        // 4. 地下层（表层以下）生成石头块
             return blockType.Stone;
-        }
+        //确定水方块:通过高度,温度和湿度确定
+
+        //确定草方块:只可以在地表,通过高度,温度确定
+
+        //确定沙方块:可以在地表,水下,地面下岩石上,通过高度和湿度确定
+
+        //确定石头方块:可以在地表和岩石层,通过高度,温度和湿度确定
+
+        // 默认返回空气（如果未匹配任何条件）
+        //return blockType.Air;
     }
+    // private void GenerateSingleChunk(Vector3 chunkWorldPosition)
+    // {
+    //     // 检查区块是否已存在
+    //     if (_chunkLoader.HasChunk(chunkWorldPosition))
+    //     {
+    //         return;
+    //     }
+    //     Vector3 chunkSize = MyGrid._instance.largerCellSize;
+    //     int waterLevel = 4;
+    //     for (int x = 0; x < chunkSize.x; x++)
+    //     {
+    //         for (int z = 0; z < chunkSize.z; z++)
+    //         {
+    //             float worldX = chunkWorldPosition.x + x;
+    //             float worldZ = chunkWorldPosition.z + z;
+
+    //             // 生成地形高度
+    //             //float noiseValue = Mathf.PerlinNoise(worldX * 0.1f, worldZ * 0.1f);
+    //             float noiseValue = _noiseGenerator.GetNoiseValue(new Vector3(worldX * 0.1f, 0, worldZ * 0.1f), NoiseType.Height_mid);
+    //             Debug.Log("noiseValue:" + noiseValue);
+    //             int groundHeight = Mathf.FloorToInt(noiseValue * 10);
+    //             Debug.Log(groundHeight);
+    //             Debug.Log(waterLevel);
+    //             bool isWater = groundHeight < waterLevel;
+    //             // 生成方块
+    //             for (int y = 0; y < groundHeight; y++)
+    //             {
+    //                 Vector3 blockPos = new Vector3(worldX, y - 4.5f, worldZ);
+    //                 // 添加方块存在检查
+    //                 if (!_chunkLoader.GetActiveBlocks().ContainsKey(
+    //                         MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(blockPos))
+    //                         )
+    //                     )
+    //                 {
+    //                     blockType type = DetermineBlockType(y, groundHeight, isWater);
+    //                     _chunkLoader.RegisterBlock(blockPos, type, GridType.DetailGrid);
+    //                 }
+    //             }
+
+    //             // 补充水面
+    //             if (isWater)
+    //             {
+    //                 for (int y = groundHeight; y <= waterLevel; y++)
+    //                 {
+    //                     Vector3 waterPos = new Vector3(worldX, y - 4.5f, worldZ);
+    //                     if (!_chunkLoader.GetActiveBlocks().ContainsKey(
+    //                             MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(waterPos))
+    //                             )
+    //                         )
+    //                     {
+    //                         _chunkLoader.RegisterBlock(waterPos, blockType.Water, GridType.DetailGrid);
+    //                     }
+
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+
+    // private blockType DetermineBlockType(int currentY, int groundHeight, bool isWater)
+    // {
+
+    //     if (currentY >= groundHeight - 1)
+    //     {
+    //         return isWater ? blockType.Water : blockType.Grass;
+    //     }
+    //     else if (currentY >= groundHeight - 3)
+    //     {
+    //         return blockType.Sand;
+    //     }
+    //     else
+    //     {
+    //         return blockType.Stone;
+    //     }
+    // }
     private Vector3 FollowPlyaer(Vector3 chunkPos, Vector3 playerPos)
     {
         return new Vector3(

@@ -383,6 +383,7 @@
 "Assets/_Script/Map/ChunkLoadDetector.cs"
 "Assets/_Script/Map/ChunkLoader.cs"
 "Assets/_Script/Map/ChunkUnloadDetector.cs"
+"Assets/_Script/Map/ImprovedNoise.cs"
 "Assets/_Script/Map/MapGenerator.cs"
 "Assets/_Script/Map/MapManager.cs"
 "Assets/_Script/Map/NoiseGenerator.cs"

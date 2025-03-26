@@ -109,6 +109,7 @@
     <Compile Include="Assets\_Script\Player\PlayerDamage.cs" />
     <Compile Include="Assets\_Script\MapDisplay.cs" />
     <Compile Include="Assets\_Script\Map\NoiseSettings.cs" />
+    <Compile Include="Assets\_Script\Map\ImprovedNoise.cs" />
     <Compile Include="Assets\_Script\TextureGenerator.cs" />
     <Compile Include="Assets\_Script\Player\Selector.cs" />
     <Compile Include="Assets\_Script\Train\WaterTank.cs" />

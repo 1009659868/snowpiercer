@@ -1016,6 +1016,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _generateOnStart: 1
   _generationInterval: 0.1
+  _seaLevel: -2
+  _baseHeight: 0
+  _heightScale: 20
+  _minWorldY: -4
   initedMap: 0
 --- !u!114 &738523128
 MonoBehaviour:
@@ -1029,6 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c4725a7019dbbf4391d4eb838e8eae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useXoroshiro: 1
   heightLowWeight: 0.6
   heightMidWeight: 0.3
   heightHighWeight: 0.1
@@ -2109,7 +2114,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1733028016}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d87a968e26ccfc40932c0d3e47b2fdd, type: 3}
   m_Name: 
@@ -2551,6 +2556,7 @@ MonoBehaviour:
     isWalkable: 0
     isBuildable: 0
     isHarvestable: 0
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 5002137142087362993, guid: 4491b13fa0e90ac48b43c7dd88422edc, type: 3}
     blockObject: {fileID: 0}
@@ -2559,6 +2565,7 @@ MonoBehaviour:
     isWalkable: 1
     isBuildable: 1
     isHarvestable: 0
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 3263708124791008450, guid: 71cced7cf245d6c4ab97c5486adb44e7, type: 3}
     blockObject: {fileID: 0}
@@ -2567,6 +2574,7 @@ MonoBehaviour:
     isWalkable: 1
     isBuildable: 1
     isHarvestable: 0
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 6220806491328333236, guid: 517ee3e933e356f48b09eff7022074b3, type: 3}
     blockObject: {fileID: 0}
@@ -2575,6 +2583,7 @@ MonoBehaviour:
     isWalkable: 0
     isBuildable: 0
     isHarvestable: 0
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 8862484656118993221, guid: 8685856a45e3ca649b603f5ff8104456, type: 3}
     blockObject: {fileID: 0}
@@ -2583,6 +2592,7 @@ MonoBehaviour:
     isWalkable: 1
     isBuildable: 0
     isHarvestable: 0
+    visibleFaces: 010101010101
   player: {fileID: 1256581962}
   loadDistance: 10
   unloadDistance: 20

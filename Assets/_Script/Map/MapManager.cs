@@ -31,7 +31,7 @@ public class MapManager : MonoBehaviour
         foreach (var noise in _noises)
         {
             _noiseSettings.Add(noise.type, noise.settings);
-            NoiseGenerator._instance.GenerateNoise(noise.type, noise.settings);
+            // NoiseGenerator._instance.GenerateNoise(noise.type, noise.settings);
         }
     }
     
@@ -39,7 +39,7 @@ public class MapManager : MonoBehaviour
     {
         if (!_noiseSettings.TryGetValue(noiseType, out NoiseSettings noiseSettings))
         {
-            Debug.LogError("No noise settings found for noise type: " + noiseType);
+            //Debug.LogError("No noise settings found for noise type: " + noiseType);
             return new NoiseSettings();
         }
         return noiseSettings;
@@ -48,7 +48,7 @@ public class MapManager : MonoBehaviour
     {
         if (!_noiseMaps.TryGetValue(noiseType, out float[,,] noiseMap))
         {
-            Debug.LogError("No noise map found for noise type: " + noiseType);
+            //Debug.LogError("No noise map found for noise type: " + noiseType);
             return new float[0,0,0];
         }
         return noiseMap;
@@ -63,7 +63,7 @@ public class MapManager : MonoBehaviour
         {
             _noiseMaps.Add(noiseType, noiseMap);
         }
-        Debug.Log("Noise map set for noise type: " + noiseType);
+        //Debug.Log("Noise map set for noise type: " + noiseType);
     }
     public Vector3 mapSize
     {

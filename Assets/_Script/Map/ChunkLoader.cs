@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+
 #region 需完成
 //完成两个功能,存储Prefab和加载地图块
 //额外性能优化:
 //      1.合并物体网格,减少碰撞检测;
 //      2.内部面不渲染,只渲染可见的面!!!
 #endregion
+
 public class ChunkLoader : MonoBehaviour
 {
     public static ChunkLoader _instance;
@@ -16,13 +17,13 @@ public class ChunkLoader : MonoBehaviour
     public Transform _boundaryHolder;
     public Transform _chunkHolder;
     [Header("Blocks")]
-    [SerializeField]private Block[] blocks;
+    [SerializeField] private Block[] blocks;
     private GameObjectPool blockPool;
-    private Dictionary<blockType,Block> _prefabMap = new Dictionary<blockType, Block>();
-    private Dictionary<Vector3,Block>_activeBlocks = new Dictionary<Vector3, Block>();
+    private Dictionary<blockType, Block> _prefabMap = new Dictionary<blockType, Block>();
+    private Dictionary<Vector3, Block> _activeBlocks = new Dictionary<Vector3, Block>();
     private Dictionary<Vector3, Chunk> _activeChunks = new Dictionary<Vector3, Chunk>();
     private Dictionary<Vector3, List<Vector3>> _chunkBlockMap = new Dictionary<Vector3, List<Vector3>>();
-    private Dictionary<Vector3,GameObject> _activeBoundary = new Dictionary<Vector3, GameObject>();
+    private Dictionary<Vector3, GameObject> _activeBoundary = new Dictionary<Vector3, GameObject>();
     [Header("Load area")]
     public Transform player;
     public int loadDistance = 10;//加载距离(半径,大网格系统,区块)
@@ -31,21 +32,22 @@ public class ChunkLoader : MonoBehaviour
     void Awake()
     {
         _instance = this;
-        blockPool=new GameObjectPool(transform);
+        blockPool = new GameObjectPool(transform);
 
         //预热对象池
         foreach (var block in blocks)
         {
             //预先生成400个备用
-            
-            _prefabMap.Add(block.type,block);
-            if(block.HasVisual())
-                blockPool.Prewarm(block.type,block.blockPrefab,400);
+
+            _prefabMap.Add(block.type, block);
+            if (block.HasVisual())
+                blockPool.Prewarm(block.type, block.blockPrefab, 400);
         }
         Debug.Log("prewarm over");
     }
     //清空地图
-    public void ClearAll(){
+    public void ClearAll()
+    {
         // 清空所有地图块
         foreach (var block in _activeBlocks.Values)
         {
@@ -69,35 +71,40 @@ public class ChunkLoader : MonoBehaviour
     //如果在Chunk生成时的位置与某一Boundary重合,那么销毁这个Boundary,再重新生成边界
     //当ChunkLoadDetector检测到这个地图边界时,则生成地图
     //所以此时需要生成一个边界GameObject,并为其添加tag=boundary
-    private void RegisterBoundary(Vector3 chunkPosition){
+    private void RegisterBoundary(Vector3 chunkPosition)
+    {
         // 检查当前区块周围的四个方向（前后左右）
         Vector3[] neighborOffsets = new Vector3[] {
             new Vector3(MyGrid._instance.largerCellSize.x, 0, 0), new Vector3(-MyGrid._instance.largerCellSize.x, 0, 0),  // 左右
             new Vector3(0, 0, MyGrid._instance.largerCellSize.z), new Vector3(0, 0, -MyGrid._instance.largerCellSize.z),  // 前后
         };
-        if (HasBoundary(chunkPosition)) 
+        if (HasBoundary(chunkPosition))
         {
             DestroyBoundary(chunkPosition);
         }
         foreach (var offset in neighborOffsets)
         {
             Vector3 neighborPosition = chunkPosition + offset;
-            if(HasChunk(neighborPosition))
-                if(HasBoundary(neighborPosition))
+            if (HasChunk(neighborPosition))
+                if (HasBoundary(neighborPosition))
                     DestroyBoundary(neighborPosition);
 
             if (!HasChunk(neighborPosition)) // 如果周围某个位置有其他区块
-                if(!HasBoundary(neighborPosition))
+                if (!HasBoundary(neighborPosition))
                     CreateBoundary(neighborPosition);  // 创建新的边界                  
         }
-        
+
+    }
+    private void UnRegisterBoundary(Vector3 chunkPosition)
+    {
+
     }
     // 创建边界
     private void CreateBoundary(Vector3 position)
     {
         GameObject boundary = new GameObject("Boundary_" + position);
         boundary.transform.position = position;
-        boundary.transform.localScale= new Vector3(MyGrid._instance.largerCellSize.x,MyGrid._instance.largerCellSize.y,MyGrid._instance.largerCellSize.z);
+        boundary.transform.localScale = new Vector3(MyGrid._instance.largerCellSize.x, MyGrid._instance.largerCellSize.y, MyGrid._instance.largerCellSize.z);
         boundary.tag = "Boundary";  // 设置标签为 Boundary
         boundary.transform.SetParent(_boundaryHolder);
         BoxCollider collider = boundary.AddComponent<BoxCollider>();
@@ -106,13 +113,15 @@ public class ChunkLoader : MonoBehaviour
         _activeBoundary.Add(position, boundary);
 
         // 可根据需求添加其他边界表现（例如加上模型、颜色等）
-        Debug.Log("Boundary created at position: " + position);
+        //Debug.Log("Boundary created at position: " + position);
     }
-    private void DestroyBoundary(Vector3 position){
-        if(_activeBoundary.ContainsKey(position)){
+    private void DestroyBoundary(Vector3 position)
+    {
+        if (_activeBoundary.ContainsKey(position))
+        {
             Destroy(_activeBoundary[position]);
             _activeBoundary.Remove(position);
-            Debug.Log("DestroyBoundary:"+position);
+            //Debug.Log("DestroyBoundary:" + position);
         }
     }
     // 注册区块
@@ -120,13 +129,13 @@ public class ChunkLoader : MonoBehaviour
     {
         if (_activeChunks.ContainsKey(chunkPosition))
         {
-            Debug.LogError("Chunk already exists at position: " + chunkPosition);
+            //Debug.LogError("Chunk already exists at position: " + chunkPosition);
             return;
         }
-        if(chunkPosition.y==player.transform.position.y)
-        RegisterBoundary(chunkPosition);
+        if (chunkPosition.y >= player.transform.position.y - MyGrid._instance.largerCellSize.y)
+            RegisterBoundary(chunkPosition);
 
-        Chunk newChunk = new Chunk(new Vector3(MyGrid._instance.largerCellSize.x,MyGrid._instance.largerCellSize.y,MyGrid._instance.largerCellSize.z),chunkPosition);
+        Chunk newChunk = new Chunk(new Vector3(MyGrid._instance.largerCellSize.x, MyGrid._instance.largerCellSize.y, MyGrid._instance.largerCellSize.z), chunkPosition);
         newChunk.ChunkObject.transform.SetParent(_chunkHolder);
         _activeChunks.Add(chunkPosition, newChunk);
         _chunkBlockMap[chunkPosition] = new List<Vector3>();
@@ -136,7 +145,7 @@ public class ChunkLoader : MonoBehaviour
     {
         if (!_activeChunks.TryGetValue(chunkPosition, out Chunk chunk))
         {
-            Debug.LogError("No chunk found at position: " + chunkPosition);
+            //Debug.LogError("No chunk found at position: " + chunkPosition);
             return;
         }
 
@@ -151,28 +160,31 @@ public class ChunkLoader : MonoBehaviour
         }
         _activeChunks.Remove(chunkPosition);
 
-        if(chunk.ChunkObject!=null){
+        if (chunk.ChunkObject != null)
+        {
             GameObject.Destroy(chunk.ChunkObject);
         }
-        
+
     }
     // 获取区块
     public Chunk GetChunk(Vector3 chunkPosition)
     {
         if (!_activeChunks.TryGetValue(chunkPosition, out Chunk chunk))
         {
-            Debug.LogError("No chunk found at position: " + chunkPosition);
+            //Debug.LogError("No chunk found at position: " + chunkPosition);
             return new Chunk();
         }
         return chunk;
     }
     //获取已注册区块
-    public Dictionary<Vector3, Chunk> GetActiveChunks(){
-        if(_activeChunks==null || _activeChunks.Count==0){ 
-            Debug.LogError("No active Chunk found");
+    public Dictionary<Vector3, Chunk> GetActiveChunks()
+    {
+        if (_activeChunks == null || _activeChunks.Count == 0)
+        {
+            //Debug.LogError("No active Chunk found");
             return new Dictionary<Vector3, Chunk>();
         }
-            
+
         return _activeChunks;
     }
     // 获取区块位置（根据地块位置计算所属区块）
@@ -184,17 +196,21 @@ public class ChunkLoader : MonoBehaviour
         return new Vector3(chunkX, chunkY, chunkZ);
     }
     //判断某位置是否存在区块
-    public bool HasChunk(Vector3 chunkPosition){
-        if(_activeChunks==null || _activeChunks.Count==0){
-            Debug.LogError("No active Chunk found");
+    public bool HasChunk(Vector3 chunkPosition)
+    {
+        if (_activeChunks == null || _activeChunks.Count == 0)
+        {
+            //Debug.LogError("No active Chunk found");
             return false;
         }
         return _activeChunks.ContainsKey(chunkPosition);
     }
     //判断Chunk生成位置是否存在边界,如存在则销毁
-    private bool HasBoundary(Vector3 chunkPosition){
-        if(_activeBoundary==null || _activeBoundary.Count==0){
-            Debug.LogError("No active Boundary");
+    private bool HasBoundary(Vector3 chunkPosition)
+    {
+        if (_activeBoundary == null || _activeBoundary.Count == 0)
+        {
+            //Debug.LogError("No active Boundary");
             return false;
         }
         return _activeBoundary.ContainsKey(chunkPosition);
@@ -202,23 +218,28 @@ public class ChunkLoader : MonoBehaviour
     #endregion
     #region 方块管理
     //获取activeBlocks
-    public Dictionary<Vector3,Block> GetActiveBlocks(){
-        if(_activeBlocks==null || _activeBlocks.Count==0){ 
-            Debug.LogError("No active blocks found");
+    public Dictionary<Vector3, Block> GetActiveBlocks()
+    {
+        if (_activeBlocks == null || _activeBlocks.Count == 0)
+        {
+            //Debug.LogError("No active blocks found");
             return new Dictionary<Vector3, Block>();
         }
-            
+
         return _activeBlocks;
     }
     //动态注册加载地图块
-    public void RegisterBlock(Vector3 position,blockType type,GridType gridType){
+    public void RegisterBlock(Vector3 position, blockType type, GridType gridType)
+    {
         Vector3 worldPosition = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
-        if(_activeBlocks.ContainsKey(worldPosition)){
-            Debug.LogError("block already exists at position: "+position);
+        if (_activeBlocks.ContainsKey(worldPosition))
+        {
+            //Debug.LogError("block already exists at position: " + position);
             return;
         }
-        if(!_prefabMap.TryGetValue(type,out Block blockPrefab)){
-            Debug.LogError("No prefab found for block type: "+type);
+        if (!_prefabMap.TryGetValue(type, out Block blockPrefab))
+        {
+            //Debug.LogError("No prefab found for block type: " + type);
             return;
         }
         Vector3 chunkPos = GetChunkPosition(worldPosition);
@@ -228,181 +249,245 @@ public class ChunkLoader : MonoBehaviour
         {
             _chunkBlockMap[chunkPos].Add(worldPosition);
         }
-        Block prefab =_prefabMap[type];
-        
-        var newBlock = new Block(worldPosition,prefab.size,prefab.blockPrefab,null,type,prefab.isDestroyable,prefab.isWalkable,prefab.isBuildable,prefab.isHarvestable);
-        if(newBlock.HasVisual()){
-            GameObject blockObject= LoadBlock(newBlock);
+        Block prefab = _prefabMap[type];
+
+        var newBlock = new Block(worldPosition, prefab.size, prefab.blockPrefab, null, type, prefab.isDestroyable, prefab.isWalkable, prefab.isBuildable, prefab.isHarvestable);
+        if (newBlock.HasVisual())
+        {
+            GameObject blockObject = LoadBlock(newBlock);
             newBlock.blockObject = blockObject;
-            AdaptGrid(blockObject,gridType);
+            AdaptGrid(blockObject, gridType);
             blockObject.transform.SetParent(GetChunk(chunkPos).ChunkObject.transform);
         }
-        _activeBlocks.Add(worldPosition,newBlock);
+
+        _activeBlocks.Add(worldPosition, newBlock);
+        // 更新相邻方块的面可见性
+        //UpdateNeighborBlocksFaceVisibility(worldPosition, newBlock.size);
     }
     //适应网格大小
-    private void AdaptGrid(GameObject blockObject,GridType gridType){
-        switch(gridType){
+    private void AdaptGrid(GameObject blockObject, GridType gridType)
+    {
+        switch (gridType)
+        {
             case GridType.DetailGrid:
-                blockObject.transform.localScale = new Vector3(MyGrid._instance.detailCellSize.x,MyGrid._instance.detailCellSize.y,MyGrid._instance.detailCellSize.z);
+                blockObject.transform.localScale = new Vector3(MyGrid._instance.detailCellSize.x, MyGrid._instance.detailCellSize.y, MyGrid._instance.detailCellSize.z);
                 break;
             case GridType.LargeGrid:
-                blockObject.transform.localScale = new Vector3(MyGrid._instance.largerCellSize.x,MyGrid._instance.largerCellSize.y,MyGrid._instance.largerCellSize.z);
+                blockObject.transform.localScale = new Vector3(MyGrid._instance.largerCellSize.x, MyGrid._instance.largerCellSize.y, MyGrid._instance.largerCellSize.z);
                 break;
         }
-        
+
     }
     //加载地图块
-    private GameObject LoadBlock(Block block){
+    private GameObject LoadBlock(Block block)
+    {
 
         // return Instantiate(block.blockPrefab,block.position,Quaternion.identity,transform);
-        return blockPool.Get(block.type,block.blockPrefab,block.position,Quaternion.identity,transform);
+        return blockPool.Get(block.type, block.blockPrefab, block.position, Quaternion.identity, transform);
     }
     //卸载地图块
-    public void UnregisterBlock(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position, out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public void UnregisterBlock(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return;
         }
-        if(block.blockObject != null)
+        Vector3 blockSize = block.size;
+        if (block.blockObject != null)
         {
             //将对象返还到对象池
             blockPool.Return(block.type, block.blockObject);
         }
-        
+
         _activeBlocks.Remove(position);
         Vector3 chunkPos = GetChunkPosition(position);
         if (_chunkBlockMap.ContainsKey(chunkPos))
         {
             _chunkBlockMap[chunkPos].Remove(position);
         }
-        Debug.Log("UnregisterBlock success! :"+position);
+
+        //Debug.Log("UnregisterBlock success! :" + position);
+        // 更新相邻方块的面可见性
+        //UpdateNeighborBlocksFaceVisibility(position, blockSize);
     }
     //获取地图块
-    public Block GetBlock(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public Block GetBlock(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            Debug.LogError("No block found at position: " + position);
             return new Block();
         }
         return block;
     }
+    public bool HasBlock(Vector3 position){
+        if(_activeBlocks==null||_activeBlocks.Count==0){
+            //Debug.LogError("No blocks");
+            return false;
+        }
+        return _activeBlocks.ContainsKey(position);
+    }
     //获取所有地图块
-    public Dictionary<Vector3,Block> GetAllBlocks(){
+    public Dictionary<Vector3, Block> GetAllBlocks()
+    {
         return _activeBlocks;
     }
     //获取地图块类型
-    public blockType GetBlockType(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public blockType GetBlockType(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return blockType.Grass;
         }
         return block.type;
     }
     //获取地图块是否可破坏
-    public bool IsBlockDestroyable(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public bool IsBlockDestroyable(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return false;
         }
         return block.isDestroyable;
     }
     //获取地图块是否可行走
-    public bool IsBlockWalkable(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public bool IsBlockWalkable(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return false;
         }
         return block.isWalkable;
     }
     //获取地图块是否可建造
-    public bool IsBlockBuildable(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public bool IsBlockBuildable(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return false;
         }
         return block.isBuildable;
     }
     //获取地图块是否可采集
-    public bool IsBlockHarvestable(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public bool IsBlockHarvestable(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return false;
         }
         return block.isHarvestable;
     }
     //获取地图块大小
-    public Vector3 GetBlockSize(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public Vector3 GetBlockSize(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return Vector3.zero;
         }
         return block.size;
     }
     //获取地图块位置
-    public Vector3 GetBlockPosition(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public Vector3 GetBlockPosition(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return Vector3.zero;
         }
         return block.position;
     }
     //获取地图块Prefab
-    public GameObject GetBlockPrefab(Vector3 position){
-        if(!_activeBlocks.TryGetValue(position,out Block block)){
-            Debug.LogError("No block found at position: "+position);
+    public GameObject GetBlockPrefab(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
             return null;
         }
         return block.type == blockType.Air ? null : block.blockPrefab;
     }
     #endregion
-    public int GetLoadRadius(){
+    public int GetLoadRadius()
+    {
         return loadDistance;
     }
-    public int GetUnloadRadius(){
+    public int GetUnloadRadius()
+    {
         return unloadDistance;
     }
-    public Vector3 GetPlayerPosition(){
+    public Vector3 GetPlayerPosition()
+    {
         return player.position;
     }
-    
+    // 更新相邻方块的面可见性
+    private void UpdateNeighborBlocksFaceVisibility(Vector3 position, Vector3 blockSize)
+    {
+        Vector3[] neighborDirections = new Vector3[]
+        {
+            Vector3.up, Vector3.down, Vector3.left,
+            Vector3.right, Vector3.forward, Vector3.back
+        };
+
+        foreach (var dir in neighborDirections)
+        {
+            Vector3 neighborPos = position + Vector3.Scale(dir, blockSize);
+            if (_activeBlocks.TryGetValue(neighborPos, out Block neighbor))
+            {
+                neighbor.UpdateFaceVisibility(_activeBlocks, neighbor.size);
+                neighbor.ApplyFaceVisibility();
+            }
+        }
+    }
 }
 [System.Serializable]
-public class Chunk{
+public class Chunk
+{
     public Vector3 size;
     public Mesh mesh;
     public GameObject ChunkObject;
     public Vector3 position;
-    public Chunk(){}
-    public Chunk(Vector3 size,Vector3 position)
+    public Chunk() { }
+    public Chunk(Vector3 size, Vector3 position)
     {
         this.size = size;
         this.mesh = new Mesh();
         this.position = position;
 
-        this.ChunkObject=new GameObject("Chunk"+position);
-        this.ChunkObject.transform.position=position;
-        this.ChunkObject.transform.localScale=size;
+        this.ChunkObject = new GameObject("Chunk" + position);
+        this.ChunkObject.transform.position = position;
+        this.ChunkObject.transform.localScale = size;
         //设置tag=Chunk
-        this.ChunkObject.tag="Chunk";
+        this.ChunkObject.tag = "Chunk";
 
-        
+
     }
 }
 [System.Serializable]
-public class Block{
-    public Vector3 position{get;set;}
+public class Block
+{
+    public Vector3 position { get; set; }
     //地块大小,占地范围
     public Vector3 size;
     public GameObject blockPrefab;
     public GameObject blockObject;
     public blockType type;
     //是否允许破坏
-    public bool isDestroyable ;
-    public bool isWalkable ;
-    public bool isBuildable ;
-    public bool isHarvestable ;
-    public Block(){}
-    public Block(Vector3 position,Vector3 blockSize,GameObject blockPrefab,GameObject blockObject,blockType type,bool isDestroyable,bool isWalkable,bool isBuildable,bool isHarvestable){
-        this.position =  MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
+    public bool isDestroyable;
+    public bool isWalkable;
+    public bool isBuildable;
+    public bool isHarvestable;
+    public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true }; // 6个面（上、下、左、右、前、后）
+    public Block() { }
+    public Block(Vector3 position, Vector3 blockSize, GameObject blockPrefab, GameObject blockObject, blockType type, bool isDestroyable, bool isWalkable, bool isBuildable, bool isHarvestable)
+    {
+        this.position = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
         this.size = blockSize;
         this.blockPrefab = blockPrefab;
         this.blockObject = blockObject;
@@ -412,14 +497,137 @@ public class Block{
         this.isBuildable = isBuildable;
         this.isHarvestable = isHarvestable;
     }
-     public bool HasVisual()
+    public bool HasVisual()
     {
         return type != blockType.Air && blockPrefab != null;
     }
+    public void UpdateFaceVisibility(Dictionary<Vector3, Block> allBlocks, Vector3 blockSize)
+    {
+        Vector3[] faceChecks = new Vector3[]
+        {
+            Vector3.up,    // 上
+            Vector3.down,  // 下
+            Vector3.left,  // 左
+            Vector3.right, // 右
+            Vector3.forward, // 前
+            Vector3.back    // 后
+        };
 
-    
+        for (int i = 0; i < 6; i++)
+        {
+            Vector3 neighborPos = position + Vector3.Scale(faceChecks[i], blockSize);
+            visibleFaces[i] = !allBlocks.ContainsKey(neighborPos) ||
+                             allBlocks[neighborPos].type == blockType.Air;
+        }
+    }
+    // 应用面可见性到网格 - 更通用的版本
+    public void ApplyFaceVisibility()
+    {
+        // 安全检查
+        if (blockObject == null)
+        {
+            Debug.LogWarning("Block object is null");
+            return;
+        }
+
+        if (type == blockType.Air)
+        {
+            Debug.Log("Skipping air block");
+            return;
+        }
+
+        MeshFilter meshFilter = blockObject.GetComponent<MeshFilter>();
+        if (meshFilter == null)
+        {
+            Debug.LogWarning("MeshFilter not found on block object");
+            return;
+        }
+
+        if (meshFilter.sharedMesh == null)
+        {
+            Debug.LogWarning("Mesh is null on block object");
+            return;
+        }
+
+        // 确保渲染器存在
+        MeshRenderer renderer = blockObject.GetComponent<MeshRenderer>();
+        if (renderer == null)
+        {
+            renderer = blockObject.AddComponent<MeshRenderer>();
+            // 从prefab复制材质
+            if (blockPrefab != null)
+            {
+                MeshRenderer prefabRenderer = blockPrefab.GetComponent<MeshRenderer>();
+                if (prefabRenderer != null)
+                {
+                    renderer.material = prefabRenderer.sharedMaterial;
+                }
+                else
+                {
+                    Debug.LogWarning("Prefab has no MeshRenderer");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Block prefab is null");
+            }
+        }
+
+        // 确保对象激活
+        if (!blockObject.activeSelf)
+        {
+            blockObject.SetActive(true);
+        }
+
+        // 创建新网格
+        Mesh originalMesh = meshFilter.sharedMesh;
+        Mesh newMesh = new Mesh();
+
+        // 复制基本属性
+        newMesh.vertices = originalMesh.vertices;
+        newMesh.normals = originalMesh.normals;
+        newMesh.uv = originalMesh.uv;
+        newMesh.colors = originalMesh.colors;
+
+        // 面剔除逻辑（保持不变）
+        // ... [之前的剔除逻辑代码]
+
+        // 应用新网格
+        meshFilter.mesh = newMesh;
+
+        // 强制刷新渲染器
+        renderer.enabled = false;
+        renderer.enabled = true;
+    }
+    // 将法线近似到最近的轴向
+    private Vector3 ApproximateToAxis(Vector3 normal)
+    {
+        float maxDot = -1f;
+        Vector3 bestAxis = Vector3.up;
+
+        Vector3[] axes = new Vector3[]
+        {
+            Vector3.up, Vector3.down,
+            Vector3.left, Vector3.right,
+            Vector3.forward, Vector3.back
+        };
+
+        foreach (var axis in axes)
+        {
+            float dot = Vector3.Dot(normal, axis);
+            if (dot > maxDot)
+            {
+                maxDot = dot;
+                bestAxis = axis;
+            }
+        }
+
+        return bestAxis;
+    }
+
 }
-public enum blockType{
+public enum blockType
+{
     Air,
     Grass,
     Water,

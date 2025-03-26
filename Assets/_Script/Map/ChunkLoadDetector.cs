@@ -34,6 +34,6 @@ public class ChunkLoadDetector : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, _chunkLoader.loadDistance*MyGrid._instance.largerCellSize.x);
+        //Gizmos.DrawWireSphere(transform.position, _chunkLoader.loadDistance*MyGrid._instance.largerCellSize.x);
     }
 }
