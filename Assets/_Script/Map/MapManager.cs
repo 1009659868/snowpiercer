@@ -145,9 +145,6 @@ public class MapManager : MonoBehaviour
         }
         return noiseChanged;
     }
-    private void ClearMap(){
-
-    }
     // 从 mapSize 同步到 groundSize
     private void SyncFromMapToGround()
     {
@@ -169,7 +166,7 @@ public class MapManager : MonoBehaviour
                     octaves = 4,
                     persistance = 0.5f,
                     lacunarity = 2f,
-                    seed = 12345,
+                    seed = 100,
                     offset = Vector2.zero,
                     Weight = 1.0f
                 }

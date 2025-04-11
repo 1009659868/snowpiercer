@@ -1,10 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public abstract class Car : MonoBehaviour
 {
     private static Train main;
+    public string _name;
+    private TrainManager _TrainManager=>TrainManager._instance;
+    private Train _Train=>Train._instance;
     private Coroutine moveCoroutine;
     protected bool isPathCalculated;
     public Rail attachedRail;
@@ -18,24 +23,43 @@ public abstract class Car : MonoBehaviour
     
     protected virtual void Start()
     {
-        // 延迟初始化确保轨道系统已建立
+        // // 延迟初始化确保轨道系统已建立
         StartCoroutine(DelayedInit());
     }
     private IEnumerator DelayedInit()
     {
-        yield return new WaitUntil(() => Railway.Instance.rails.Count > 0);
-        if (attachedRail == null)
-        {
-            // 根据车厢顺序自动分配初始轨道
-            int index = Train.Instance.cars.IndexOf(this);
-            int RIndex=Train.Instance.cars.Count-index-1<0?Train.Instance.cars.Count:Train.Instance.cars.Count-index-1;
-            AttachToRail(Railway.Instance.rails[RIndex]);
-        }
+        yield return new WaitUntil(() => 
+            Railway.Instance != null && 
+            Railway.Instance.rails.Count > 0 &&
+            Train._instance != null&&
+            _TrainManager._activedCar.Count>0);
+        // if (attachedRail == null)
+        // {
+        //     // // 根据车厢顺序自动分配初始轨道
+        //     // int index = Train.Instance.cars.IndexOf(this);
+        //     // int RIndex=Train.Instance.cars.Count-index-1<0?Train.Instance.cars.Count:Train.Instance.cars.Count-index-1;
+        //     // AttachToRail(Railway.Instance.rails[RIndex]);
+        //     Debug.Log(_name);
+        //     //_Train.cars.Add(_TrainManager.GetCar(_name).GetComponent<Car>());
+        //     int index = _TrainManager.CarList.IndexOf(this);
+        //     Debug.Log(index);
+        //     int railIndex = _TrainManager._activedCar.Count - index - 1;
+        //     railIndex = Mathf.Clamp(railIndex, 0, Railway.Instance.rails.Count - 1);
+        //     AttachToRail(Railway.Instance.rails[railIndex]);
+        // }
+        if(main==null)
+        main = Train._instance; // 直接引用单例实例
     }
-    private void Awake()
-    {
-        main = this.GetComponentInParent<Train>();
-    }
+    // private void Awake()
+    // {
+    //     main = Train._instance; // 直接引用单例实例
+    //     // main = this.GetComponentInParent<Train>();
+    //     // 添加保护性检查
+    //     if (main == null)
+    //     {
+    //         Debug.LogError("Train instance not found! Ensure Train script exists in the scene.");
+    //     }
+    // }
 
     private void OnEnable()
     {

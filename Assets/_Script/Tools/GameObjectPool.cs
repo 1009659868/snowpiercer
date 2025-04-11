@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameObjectPool 
 {
-    private Dictionary<blockType, Stack<GameObject>> pool = new Dictionary<blockType, Stack<GameObject>>();
+    private Dictionary<BlockType, Stack<GameObject>> pool = new Dictionary<BlockType, Stack<GameObject>>();
     private Transform poolParent;
     
     public GameObjectPool(Transform parent)
@@ -13,7 +13,7 @@ public class GameObjectPool
         poolParent.SetParent(parent);
         poolParent.gameObject.SetActive(false);
     }
-    public GameObject Get(blockType type, GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
+    public GameObject Get(BlockType type, GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
     {
         GameObject obj;
         
@@ -31,7 +31,7 @@ public class GameObjectPool
         }
         return obj;
     }
-    public void Return(blockType type, GameObject obj)
+    public void Return(BlockType type, GameObject obj)
     {
         if (!pool.ContainsKey(type))
         {
@@ -42,10 +42,10 @@ public class GameObjectPool
         obj.transform.SetParent(poolParent);
         pool[type].Push(obj);
     }
-    public void Prewarm(blockType type, GameObject prefab, int count)
+    public void Prewarm(BlockType type, GameObject prefab, int count)
     {
         // 跳过空气方块的预生成
-        if (type == blockType.Air || prefab == null)
+        if (type == BlockType.Air || prefab == null)
         {
             return;
         }

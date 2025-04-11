@@ -223,6 +223,14 @@ public class PlayerStack : MonoBehaviour
             stackable.SnapToStack(stackable.lower == null ? stackOrigin.position : stackable.lower.anchor, transform.eulerAngles);
         }
     }
+    public void ConsumeResource(int amount)
+    {
+        for (int i = 0; i < amount && stack.Count > 0; i++)
+        {
+            IStackable item = stack.Pop();
+            // if (item != null) Destroy();
+        }
+    }
 }
 
 public enum StackEvent { NONE, GRAB, DROP, LINK }

@@ -19,15 +19,17 @@ public class ChunkLoader : MonoBehaviour
     [Header("Blocks")]
     [SerializeField] private Block[] blocks;
     private GameObjectPool blockPool;
-    private Dictionary<blockType, Block> _prefabMap = new Dictionary<blockType, Block>();
+    private Dictionary<BlockType, Block> _prefabMap = new Dictionary<BlockType, Block>();
     private Dictionary<Vector3, Block> _activeBlocks = new Dictionary<Vector3, Block>();
     private Dictionary<Vector3, Chunk> _activeChunks = new Dictionary<Vector3, Chunk>();
     private Dictionary<Vector3, List<Vector3>> _chunkBlockMap = new Dictionary<Vector3, List<Vector3>>();
     private Dictionary<Vector3, GameObject> _activeBoundary = new Dictionary<Vector3, GameObject>();
+
     [Header("Load area")]
     public Transform player;
-    public int loadDistance = 10;//加载距离(半径,大网格系统,区块)
-    public int unloadDistance = 15;//卸载距离(半径,大网格系统,区块)
+    public int loadDistance = 12;//加载距离(半径,大网格系统,区块)
+    public int unloadDistance = 20;//卸载距离(半径,大网格系统,区块)
+    public int unInstallDistance=50;//真正的卸载距离
 
     void Awake()
     {
@@ -43,7 +45,7 @@ public class ChunkLoader : MonoBehaviour
             if (block.HasVisual())
                 blockPool.Prewarm(block.type, block.blockPrefab, 400);
         }
-        Debug.Log("prewarm over");
+        // Debug.Log("prewarm over");
     }
     //清空地图
     public void ClearAll()
@@ -62,7 +64,7 @@ public class ChunkLoader : MonoBehaviour
         _activeChunks.Clear();
         _chunkBlockMap.Clear();
 
-        Debug.Log("地图已清空！");
+        // Debug.Log("地图已清空！");
     }
     #region 区块管理
     //检测当前Chunk周围一chunk的范围,
@@ -125,19 +127,23 @@ public class ChunkLoader : MonoBehaviour
         }
     }
     // 注册区块
-    public void RegisterChunk(Vector3 chunkPosition)
+    public void RegisterChunk(Chunk chunk)
     {
+        Vector3 chunkPosition=chunk.transform.position;
         if (_activeChunks.ContainsKey(chunkPosition))
         {
             //Debug.LogError("Chunk already exists at position: " + chunkPosition);
+            
             return;
         }
         if (chunkPosition.y >= player.transform.position.y - MyGrid._instance.largerCellSize.y)
             RegisterBoundary(chunkPosition);
+        
+        chunk.transform.SetParent(_chunkHolder);
+        // 添加自动加载组件
+        // newChunk.ChunkObject.AddComponent<ChunkAutoLoader>();
 
-        Chunk newChunk = new Chunk(new Vector3(MyGrid._instance.largerCellSize.x, MyGrid._instance.largerCellSize.y, MyGrid._instance.largerCellSize.z), chunkPosition);
-        newChunk.ChunkObject.transform.SetParent(_chunkHolder);
-        _activeChunks.Add(chunkPosition, newChunk);
+        _activeChunks.Add(chunkPosition, chunk);
         _chunkBlockMap[chunkPosition] = new List<Vector3>();
     }
     // 卸载区块
@@ -172,7 +178,7 @@ public class ChunkLoader : MonoBehaviour
         if (!_activeChunks.TryGetValue(chunkPosition, out Chunk chunk))
         {
             //Debug.LogError("No chunk found at position: " + chunkPosition);
-            return new Chunk();
+            return null;
         }
         return chunk;
     }
@@ -188,7 +194,7 @@ public class ChunkLoader : MonoBehaviour
         return _activeChunks;
     }
     // 获取区块位置（根据地块位置计算所属区块）
-    private Vector3 GetChunkPosition(Vector3 blockPosition)
+    public Vector3 GetChunkPosition(Vector3 blockPosition)
     {
         int chunkX = Mathf.FloorToInt(blockPosition.x / MyGrid._instance.largerCellSize.x) * (int)MyGrid._instance.largerCellSize.x;
         int chunkY = Mathf.FloorToInt(blockPosition.y / MyGrid._instance.largerCellSize.y) * (int)MyGrid._instance.largerCellSize.y;
@@ -229,12 +235,20 @@ public class ChunkLoader : MonoBehaviour
         return _activeBlocks;
     }
     //动态注册加载地图块
-    public void RegisterBlock(Vector3 position, blockType type, GridType gridType)
+    public void RegisterBlock(Chunk newChunk, Vector3 position, BlockType type, GridType gridType)
     {
         Vector3 worldPosition = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
         if (_activeBlocks.ContainsKey(worldPosition))
         {
-            //Debug.LogError("block already exists at position: " + position);
+            // Debug.LogError("block already exists at position: " + position);
+            Vector3 registedChunk = GetChunkPosition(worldPosition);
+            if (_activeChunks.TryGetValue(registedChunk, out Chunk chunk))
+            {
+                if(!chunk.ChunkObject.activeSelf){
+                    chunk.ChunkObject.SetActive(true);
+                    return;
+                }    
+            }
             return;
         }
         if (!_prefabMap.TryGetValue(type, out Block blockPrefab))
@@ -243,8 +257,9 @@ public class ChunkLoader : MonoBehaviour
             return;
         }
         Vector3 chunkPos = GetChunkPosition(worldPosition);
+
         //如果chunk为空则,注册区块
-        RegisterChunk(chunkPos);
+        RegisterChunk(newChunk);
         if (_chunkBlockMap.ContainsKey(chunkPos))
         {
             _chunkBlockMap[chunkPos].Add(worldPosition);
@@ -257,12 +272,60 @@ public class ChunkLoader : MonoBehaviour
             GameObject blockObject = LoadBlock(newBlock);
             newBlock.blockObject = blockObject;
             AdaptGrid(blockObject, gridType);
-            blockObject.transform.SetParent(GetChunk(chunkPos).ChunkObject.transform);
+            blockObject.transform.SetParent(newChunk.transform);
         }
 
         _activeBlocks.Add(worldPosition, newBlock);
         // 更新相邻方块的面可见性
-        //UpdateNeighborBlocksFaceVisibility(worldPosition, newBlock.size);
+        UpdateBlockAndNeighborsFaces(worldPosition);
+    }
+    //卸载地图块
+    public void UnregisterBlock(Vector3 position)
+    {
+        if (!_activeBlocks.TryGetValue(position, out Block block))
+        {
+            //Debug.LogError("No block found at position: " + position);
+            return;
+        }
+        // 先记录邻居位置
+        Vector3[] neighborOffsets = new Vector3[]
+        {
+            Vector3.up, Vector3.down,
+            Vector3.left, Vector3.right,
+            Vector3.forward, Vector3.back
+        };
+        
+        List<Vector3> neighborsToUpdate = new List<Vector3>();
+        foreach (var offset in neighborOffsets)
+        {
+            Vector3 neighborPos = position + offset * block.size.x;
+            if (_activeBlocks.ContainsKey(neighborPos))
+            {
+                neighborsToUpdate.Add(neighborPos);
+            }
+        }
+
+        Vector3 blockSize = block.size;
+        if (block.blockObject != null)
+        {
+            //将对象返还到对象池
+            blockPool.Return(block.type, block.blockObject);
+        }
+
+        _activeBlocks.Remove(position);
+        Vector3 chunkPos = GetChunkPosition(position);
+        if (_chunkBlockMap.ContainsKey(chunkPos))
+        {
+            _chunkBlockMap[chunkPos].Remove(position);
+        }
+
+        //Debug.Log("UnregisterBlock success! :" + position);
+        // 更新邻居的面
+        foreach (var neighborPos in neighborsToUpdate)
+        {
+            UpdateBlockFaces(neighborPos);
+        }
+
     }
     //适应网格大小
     private void AdaptGrid(GameObject blockObject, GridType gridType)
@@ -285,32 +348,7 @@ public class ChunkLoader : MonoBehaviour
         // return Instantiate(block.blockPrefab,block.position,Quaternion.identity,transform);
         return blockPool.Get(block.type, block.blockPrefab, block.position, Quaternion.identity, transform);
     }
-    //卸载地图块
-    public void UnregisterBlock(Vector3 position)
-    {
-        if (!_activeBlocks.TryGetValue(position, out Block block))
-        {
-            //Debug.LogError("No block found at position: " + position);
-            return;
-        }
-        Vector3 blockSize = block.size;
-        if (block.blockObject != null)
-        {
-            //将对象返还到对象池
-            blockPool.Return(block.type, block.blockObject);
-        }
-
-        _activeBlocks.Remove(position);
-        Vector3 chunkPos = GetChunkPosition(position);
-        if (_chunkBlockMap.ContainsKey(chunkPos))
-        {
-            _chunkBlockMap[chunkPos].Remove(position);
-        }
-
-        //Debug.Log("UnregisterBlock success! :" + position);
-        // 更新相邻方块的面可见性
-        //UpdateNeighborBlocksFaceVisibility(position, blockSize);
-    }
+    
     //获取地图块
     public Block GetBlock(Vector3 position)
     {
@@ -321,25 +359,29 @@ public class ChunkLoader : MonoBehaviour
         }
         return block;
     }
-    public bool HasBlock(Vector3 position){
-        if(_activeBlocks==null||_activeBlocks.Count==0){
+    public bool HasBlock(Vector3 position)
+    {
+        if (_activeBlocks == null || _activeBlocks.Count == 0)
+        {
             //Debug.LogError("No blocks");
             return false;
         }
         return _activeBlocks.ContainsKey(position);
     }
+
+
     //获取所有地图块
     public Dictionary<Vector3, Block> GetAllBlocks()
     {
         return _activeBlocks;
     }
     //获取地图块类型
-    public blockType GetBlockType(Vector3 position)
+    public BlockType GetBlockType(Vector3 position)
     {
         if (!_activeBlocks.TryGetValue(position, out Block block))
         {
             //Debug.LogError("No block found at position: " + position);
-            return blockType.Grass;
+            return BlockType.Grass;
         }
         return block.type;
     }
@@ -411,7 +453,7 @@ public class ChunkLoader : MonoBehaviour
             //Debug.LogError("No block found at position: " + position);
             return null;
         }
-        return block.type == blockType.Air ? null : block.blockPrefab;
+        return block.type == BlockType.Air ? null : block.blockPrefab;
     }
     #endregion
     public int GetLoadRadius()
@@ -422,53 +464,48 @@ public class ChunkLoader : MonoBehaviour
     {
         return unloadDistance;
     }
+    public int GetUnInstallRadius(){
+        return unInstallDistance;
+    }
     public Vector3 GetPlayerPosition()
     {
         return player.position;
     }
+    public Transform GetPlayerTransform(){
+        return player;
+    }
     // 更新相邻方块的面可见性
-    private void UpdateNeighborBlocksFaceVisibility(Vector3 position, Vector3 blockSize)
+    private void UpdateBlockAndNeighborsFaces(Vector3 position)
     {
-        Vector3[] neighborDirections = new Vector3[]
+        UpdateBlockFaces(position);
+        
+        Block block = _activeBlocks[position];
+        Vector3[] neighborOffsets = new Vector3[]
         {
-            Vector3.up, Vector3.down, Vector3.left,
-            Vector3.right, Vector3.forward, Vector3.back
+            Vector3.up, Vector3.down,
+            Vector3.left, Vector3.right,
+            Vector3.forward, Vector3.back
         };
-
-        foreach (var dir in neighborDirections)
+        
+        foreach (var offset in neighborOffsets)
         {
-            Vector3 neighborPos = position + Vector3.Scale(dir, blockSize);
-            if (_activeBlocks.TryGetValue(neighborPos, out Block neighbor))
+            Vector3 neighborPos = position + offset * block.size.x*MyGrid._instance.detailCellSize.x;
+            if (_activeBlocks.ContainsKey(neighborPos))
             {
-                neighbor.UpdateFaceVisibility(_activeBlocks, neighbor.size);
-                neighbor.ApplyFaceVisibility();
+                UpdateBlockFaces(neighborPos);
             }
         }
     }
-}
-[System.Serializable]
-public class Chunk
-{
-    public Vector3 size;
-    public Mesh mesh;
-    public GameObject ChunkObject;
-    public Vector3 position;
-    public Chunk() { }
-    public Chunk(Vector3 size, Vector3 position)
+    private void UpdateBlockFaces(Vector3 position)
     {
-        this.size = size;
-        this.mesh = new Mesh();
-        this.position = position;
-
-        this.ChunkObject = new GameObject("Chunk" + position);
-        this.ChunkObject.transform.position = position;
-        this.ChunkObject.transform.localScale = size;
-        //设置tag=Chunk
-        this.ChunkObject.tag = "Chunk";
-
-
+        if (!_activeBlocks.TryGetValue(position, out Block block)) return;
+        
+        block.UpdateFaceVisibility(_activeBlocks);
+        block.ApplyFaceVisibility();
     }
 }
+
+#region Block
 [System.Serializable]
 public class Block
 {
@@ -477,15 +514,18 @@ public class Block
     public Vector3 size;
     public GameObject blockPrefab;
     public GameObject blockObject;
-    public blockType type;
+    public BlockType type;
     //是否允许破坏
     public bool isDestroyable;
     public bool isWalkable;
     public bool isBuildable;
     public bool isHarvestable;
-    public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true }; // 6个面（上、下、左、右、前、后）
+    // 6个面是否可见（上、下、左、右、前、后）
+    public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true };
+    // 记录每个面被哪些邻居遮挡（用于精确恢复）
+    private Dictionary<int, List<Vector3>> _occlusionRecords = new Dictionary<int, List<Vector3>>();
     public Block() { }
-    public Block(Vector3 position, Vector3 blockSize, GameObject blockPrefab, GameObject blockObject, blockType type, bool isDestroyable, bool isWalkable, bool isBuildable, bool isHarvestable)
+    public Block(Vector3 position, Vector3 blockSize, GameObject blockPrefab, GameObject blockObject, BlockType type, bool isDestroyable, bool isWalkable, bool isBuildable, bool isHarvestable)
     {
         this.position = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
         this.size = blockSize;
@@ -499,140 +539,228 @@ public class Block
     }
     public bool HasVisual()
     {
-        return type != blockType.Air && blockPrefab != null;
+        return type != BlockType.Air && blockPrefab != null;
     }
-    public void UpdateFaceVisibility(Dictionary<Vector3, Block> allBlocks, Vector3 blockSize)
+    public void UpdateFaceVisibility(Dictionary<Vector3, Block> allBlocks)
     {
-        Vector3[] faceChecks = new Vector3[]
-        {
-            Vector3.up,    // 上
-            Vector3.down,  // 下
-            Vector3.left,  // 左
-            Vector3.right, // 右
-            Vector3.forward, // 前
-            Vector3.back    // 后
-        };
-
-        for (int i = 0; i < 6; i++)
-        {
-            Vector3 neighborPos = position + Vector3.Scale(faceChecks[i], blockSize);
-            visibleFaces[i] = !allBlocks.ContainsKey(neighborPos) ||
-                             allBlocks[neighborPos].type == blockType.Air;
-        }
-    }
-    // 应用面可见性到网格 - 更通用的版本
-    public void ApplyFaceVisibility()
-    {
-        // 安全检查
-        if (blockObject == null)
-        {
-            Debug.LogWarning("Block object is null");
-            return;
-        }
-
-        if (type == blockType.Air)
-        {
-            Debug.Log("Skipping air block");
-            return;
-        }
-
-        MeshFilter meshFilter = blockObject.GetComponent<MeshFilter>();
-        if (meshFilter == null)
-        {
-            Debug.LogWarning("MeshFilter not found on block object");
-            return;
-        }
-
-        if (meshFilter.sharedMesh == null)
-        {
-            Debug.LogWarning("Mesh is null on block object");
-            return;
-        }
-
-        // 确保渲染器存在
-        MeshRenderer renderer = blockObject.GetComponent<MeshRenderer>();
-        if (renderer == null)
-        {
-            renderer = blockObject.AddComponent<MeshRenderer>();
-            // 从prefab复制材质
-            if (blockPrefab != null)
-            {
-                MeshRenderer prefabRenderer = blockPrefab.GetComponent<MeshRenderer>();
-                if (prefabRenderer != null)
-                {
-                    renderer.material = prefabRenderer.sharedMaterial;
-                }
-                else
-                {
-                    Debug.LogWarning("Prefab has no MeshRenderer");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Block prefab is null");
-            }
-        }
-
-        // 确保对象激活
-        if (!blockObject.activeSelf)
-        {
-            blockObject.SetActive(true);
-        }
-
-        // 创建新网格
-        Mesh originalMesh = meshFilter.sharedMesh;
-        Mesh newMesh = new Mesh();
-
-        // 复制基本属性
-        newMesh.vertices = originalMesh.vertices;
-        newMesh.normals = originalMesh.normals;
-        newMesh.uv = originalMesh.uv;
-        newMesh.colors = originalMesh.colors;
-
-        // 面剔除逻辑（保持不变）
-        // ... [之前的剔除逻辑代码]
-
-        // 应用新网格
-        meshFilter.mesh = newMesh;
-
-        // 强制刷新渲染器
-        renderer.enabled = false;
-        renderer.enabled = true;
-    }
-    // 将法线近似到最近的轴向
-    private Vector3 ApproximateToAxis(Vector3 normal)
-    {
-        float maxDot = -1f;
-        Vector3 bestAxis = Vector3.up;
-
-        Vector3[] axes = new Vector3[]
+        Vector3[] faceDirections = new Vector3[]
         {
             Vector3.up, Vector3.down,
             Vector3.left, Vector3.right,
             Vector3.forward, Vector3.back
         };
 
-        foreach (var axis in axes)
+        for (int faceIndex = 0; faceIndex < 6; faceIndex++)
         {
-            float dot = Vector3.Dot(normal, axis);
-            if (dot > maxDot)
+            Vector3 checkDir = faceDirections[faceIndex];
+            Vector3 neighborPos = position + checkDir * size.x;
+
+            // 清除旧记录
+            if (!_occlusionRecords.ContainsKey(faceIndex))
+                _occlusionRecords[faceIndex] = new List<Vector3>();
+            else
+                _occlusionRecords[faceIndex].Clear();
+
+            // 检测所有可能遮挡的方块（考虑不同尺寸方块）
+            bool isOccluded = false;
+            foreach (var offset in GetPotentialOcclusionOffsets(checkDir))
             {
-                maxDot = dot;
-                bestAxis = axis;
+                Vector3 checkPos = position + offset;
+                if (allBlocks.TryGetValue(checkPos, out Block neighbor) && 
+                    neighbor.type != BlockType.Air)
+                {
+                    _occlusionRecords[faceIndex].Add(checkPos);
+                    isOccluded = true;
+                }
+            }
+
+            // 只有完全被遮挡时才隐藏面
+            visibleFaces[faceIndex] = !isOccluded;
+        }
+    }
+    // 获取可能遮挡当前面的所有偏移位置
+    private IEnumerable<Vector3> GetPotentialOcclusionOffsets(Vector3 direction)
+    {
+        yield return direction * size.x*MyGrid._instance.detailCellSize.x; // 标准相邻位置
+        // 如果是大网格系统，可能需要检查更多位置
+        if (size.x > 1f)
+        {
+            // 添加对大尺寸方块的额外检测点
+            // 示例：对2x2x2方块的额外检测
+            if (direction == Vector3.right)
+            {
+                yield return direction * size.x + Vector3.forward;
+                yield return direction * size.x + Vector3.back;
+                yield return direction * size.x + Vector3.up;
+                yield return direction * size.x + Vector3.down;
+            }else if(direction == Vector3.left){
+                yield return direction * size.x + Vector3.forward;
+                yield return direction * size.x + Vector3.back;
+                yield return direction * size.x + Vector3.up;
+                yield return direction * size.x + Vector3.down;
+            }else if(direction == Vector3.up){
+                yield return direction * size.x + Vector3.right;
+                yield return direction * size.x + Vector3.left;
+                yield return direction * size.x + Vector3.forward;
+                yield return direction * size.x + Vector3.back;
+            }else if(direction == Vector3.down){
+                yield return direction * size.x + Vector3.right;
+                yield return direction * size.x + Vector3.left;
+                yield return direction * size.x + Vector3.forward;
+                yield return direction * size.x + Vector3.back;
+            }else if(direction == Vector3.forward){
+                yield return direction * size.x + Vector3.right;
+                yield return direction * size.x + Vector3.left;
+                yield return direction * size.x + Vector3.up;
+                yield return direction * size.x + Vector3.down;
+            }else if(direction == Vector3.back){
+                yield return direction * size.x + Vector3.right;
+                yield return direction * size.x + Vector3.left;
+                yield return direction * size.x + Vector3.up;
+                yield return direction * size.x + Vector3.down;
             }
         }
+        
+    }
+    // 当邻居被移除时恢复面
+    public void RestoreFace(Vector3 removedNeighborPos)
+    {
+        for (int faceIndex = 0; faceIndex < 6; faceIndex++)
+        {
+            if (_occlusionRecords.ContainsKey(faceIndex) && 
+                _occlusionRecords[faceIndex].Contains(removedNeighborPos))
+            {
+                _occlusionRecords[faceIndex].Remove(removedNeighborPos);
+                visibleFaces[faceIndex] = _occlusionRecords[faceIndex].Count == 0;
+            }
+        }
+    }
+    // 应用面可见性到网格 - 更通用的版本
+    public void ApplyFaceVisibility()
+    {
+        if (blockObject == null || type == BlockType.Air) return;
 
-        return bestAxis;
+        MeshFilter meshFilter = blockObject.GetComponent<MeshFilter>();
+
+        if (meshFilter == null) return;
+
+        Mesh originalMesh = meshFilter.sharedMesh;
+        Mesh newMesh = new Mesh();
+        MeshRenderer renderer = blockObject.GetComponent<MeshRenderer>();
+        Material material = renderer.material;
+        material.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off); // 禁用剔除
+        
+        
+        // 收集可见面的顶点数据
+        List<Vector3> vertices = new List<Vector3>();
+        List<int> triangles = new List<int>();
+        List<Vector2> uvs = new List<Vector2>();
+        List<Vector3> normals = new List<Vector3>();
+
+        int vertexOffset = 0;
+
+        // 上下面
+        if (visibleFaces[0]) AddFace(Vector3.up, vertices, triangles, uvs, normals, ref vertexOffset);
+        if (visibleFaces[1]) AddFace(Vector3.down, vertices, triangles, uvs, normals, ref vertexOffset);
+
+        // 左右面
+        if (visibleFaces[2]) AddFace(Vector3.left, vertices, triangles, uvs, normals, ref vertexOffset);
+        if (visibleFaces[3]) AddFace(Vector3.right, vertices, triangles, uvs, normals, ref vertexOffset);
+
+        // 前后面
+        if (visibleFaces[4]) AddFace(Vector3.forward, vertices, triangles, uvs, normals, ref vertexOffset);
+        if (visibleFaces[5]) AddFace(Vector3.back, vertices, triangles, uvs, normals, ref vertexOffset);
+
+        newMesh.vertices = vertices.ToArray();
+        newMesh.triangles = triangles.ToArray();
+        newMesh.uv = uvs.ToArray();
+        newMesh.normals = normals.ToArray();
+
+        meshFilter.mesh = newMesh;
     }
 
+    private void AddFace(Vector3 direction, List<Vector3> vertices, List<int> triangles,
+                        List<Vector2> uvs, List<Vector3> normals, ref int vertexOffset)
+    {
+        float halfSize = size.x * 0.5f;
+        Vector3[] faceVertices = new Vector3[4];
+
+        // 根据方向定义4个顶点
+        if (direction == Vector3.up) // Top
+        {
+            faceVertices = new[]
+            {
+                new Vector3(-halfSize, halfSize, -halfSize),
+                new Vector3(halfSize, halfSize, -halfSize),
+                new Vector3(halfSize, halfSize, halfSize),
+                new Vector3(-halfSize, halfSize, halfSize)
+            };
+        }
+        else if (direction == Vector3.down) // Bottom
+        {
+            faceVertices = new[]
+            {
+                new Vector3(-halfSize, -halfSize, halfSize),
+                new Vector3(halfSize, -halfSize, halfSize),
+                new Vector3(halfSize, -halfSize, -halfSize),
+                new Vector3(-halfSize, -halfSize, -halfSize)
+            };
+        }
+        else if (direction == Vector3.left) // Left
+        {
+            faceVertices = new[]
+            {
+                new Vector3(-halfSize, halfSize, halfSize),
+                new Vector3(-halfSize, halfSize, -halfSize),
+                new Vector3(-halfSize, -halfSize, -halfSize),
+                new Vector3(-halfSize, -halfSize, halfSize)
+            };
+        }
+        else if (direction == Vector3.right) // Right
+        {
+            faceVertices = new[]
+            {
+                new Vector3(halfSize, halfSize, -halfSize),
+                new Vector3(halfSize, halfSize, halfSize),
+                new Vector3(halfSize, -halfSize, halfSize),
+                new Vector3(halfSize, -halfSize, -halfSize)
+            };
+        }
+        else if (direction == Vector3.forward) // Front (Z+)
+        {
+            faceVertices = new[]
+            {
+                new Vector3(-halfSize, halfSize, halfSize),
+                new Vector3(halfSize, halfSize, halfSize),
+                new Vector3(halfSize, -halfSize, halfSize),
+                new Vector3(-halfSize, -halfSize, halfSize)
+            };
+        }
+        else if (direction == Vector3.back) // Back (Z-)
+        {
+            faceVertices = new[]
+            {
+                new Vector3(halfSize, halfSize, -halfSize),
+                new Vector3(-halfSize, halfSize, -halfSize),
+                new Vector3(-halfSize, -halfSize, -halfSize),
+                new Vector3(halfSize, -halfSize, -halfSize)
+            };
+        }
+
+        vertices.AddRange(faceVertices);
+        normals.AddRange(new[] { direction, direction, direction, direction });
+        uvs.AddRange(new[] { Vector2.zero, Vector2.right, Vector2.one, Vector2.up });
+
+        triangles.Add(vertexOffset);
+        triangles.Add(vertexOffset + 1);
+        triangles.Add(vertexOffset + 2);
+        triangles.Add(vertexOffset);
+        triangles.Add(vertexOffset + 2);
+        triangles.Add(vertexOffset + 3);
+
+        vertexOffset += 4;
+
+    }
 }
-public enum blockType
-{
-    Air,
-    Grass,
-    Water,
-    Sand,
-    Stone,
-    Wood,
-    Iron
-}
+#endregion
+

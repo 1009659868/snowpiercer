@@ -70,6 +70,7 @@
     <Compile Include="Assets\_Script\Stackables\StackableBase.cs" />
     <Compile Include="Assets\_Script\Player\PlayerMovement.cs" />
     <Compile Include="Assets\_Script\Train\Car.cs" />
+    <Compile Include="Assets\_Script\Map\ChunkAutoLoader.cs" />
     <Compile Include="Assets\_Script\Train\TrainMovement.cs" />
     <Compile Include="Assets\_Script\EventManager.cs" />
     <Compile Include="Assets\_Script\Map\NoiseGenerator.cs" />
@@ -93,12 +94,15 @@
     <Compile Include="Assets\_Script\Map\ChunkLoadDetector.cs" />
     <Compile Include="Assets\_Script\Resources\Resources.cs" />
     <Compile Include="Assets\_Script\Helper.cs" />
+    <Compile Include="Assets\_Script\Tools\MyRender.cs" />
     <Compile Include="Assets\_Script\Player\PlayerAnimator.cs" />
+    <Compile Include="Assets\_Script\Map\Chunk.cs" />
     <Compile Include="Assets\_Script\MapGenerator_V3.cs" />
     <Compile Include="Assets\_Script\Map\ChunkUnloadDetector.cs" />
     <Compile Include="Assets\_Script\PrefabSettings.cs" />
     <Compile Include="Assets\_Script\MyGrid.cs" />
     <Compile Include="Assets\_Script\Interfaces\IDamagable.cs" />
+    <Compile Include="Assets\_Script\Map\World.cs" />
     <Compile Include="Assets\_Script\Train\RailCrafter.cs" />
     <Compile Include="Assets\_Script\Train\Train.cs" />
     <Compile Include="Assets\_Script\Player\PlayerStack.cs" />
@@ -113,6 +117,7 @@
     <Compile Include="Assets\_Script\TextureGenerator.cs" />
     <Compile Include="Assets\_Script\Player\Selector.cs" />
     <Compile Include="Assets\_Script\Train\WaterTank.cs" />
+    <Compile Include="Assets\_Script\Train\Train Manager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Customizable Skybox\Stylized Sky\Shaders\Stylized Sky.shader" />

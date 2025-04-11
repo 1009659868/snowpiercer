@@ -31,7 +31,7 @@ public class Rail : StackableBase
         normalRail.SetActive(true);
         cornerRail.SetActive(false);
     }
-
+    
     public override void LinkWithPrevious()
     {
         if (upperNeighbor != null && upperNeighbor.previous != null && upperNeighbor.next == null)
@@ -67,7 +67,6 @@ public class Rail : StackableBase
             this.previous.LinkWithNext(this as ILinkable);
         }
     }
-
     public override void LinkWithNext(ILinkable next)
     {
         this.next = next;

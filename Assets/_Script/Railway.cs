@@ -12,6 +12,7 @@ public class Railway : MonoBehaviour
     [SerializeField] private Rail prefab;
     // 存储所有生成的铁路对象
     public List<Rail> rails { get; private set; } = new List<Rail>();
+    Stack<Rail> spawnedRails = new Stack<Rail>();
     private void Awake()
     {
         _instance = this;
@@ -20,17 +21,17 @@ public class Railway : MonoBehaviour
     {
         SpawnRails();
     }
+    
     // 添加轨道到系统
     public void AddRail(Rail rail)
     {
         if (!rails.Contains(rail))
-        {
+        {   
             rails.Add(rail);
         }
     }
     private void SpawnRails()
     {
-        Stack<Rail> spawnedRails = new Stack<Rail>();
         foreach (Transform rail in startingRails)
         {
             // 根据预制体生成新的 Rail 对象，放置到 railParent 下
@@ -41,6 +42,7 @@ public class Railway : MonoBehaviour
     }
     private void SetupRailConnection(Stack<Rail> spawnedRails, Rail newRail)
     {
+        // Debug.Log("in");
         if (spawnedRails.TryPeek(out Rail lastRail))
         {
             newRail.previous = lastRail;
@@ -48,7 +50,7 @@ public class Railway : MonoBehaviour
         }
         else
         {
-            newRail.previous = newRail;
+            newRail.previous = null;
         }
         spawnedRails.Push(newRail);
     }
