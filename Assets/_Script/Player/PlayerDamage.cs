@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class PlayerDamage : MonoBehaviour
 {
-    [SerializeField] private FocusChecker focusChecker;
+    [SerializeField] private MouseFocusChecker mouseFocusChecker;
+    // [SerializeField] private FocusChecker focusChecker;
 
     private GameObject focus { get; set; }
 
 
     public void Update()
     {
-        focus = focusChecker.focus;
+        focus =  mouseFocusChecker.mouseFocus;
+        // focus = focusChecker.focus;
         
         if (focus == null) return;
 

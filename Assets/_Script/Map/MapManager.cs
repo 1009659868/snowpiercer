@@ -157,6 +157,7 @@ public class MapManager : MonoBehaviour
         _mapSize = new Vector3(_groundSize.x, _mapSize.y, _groundSize.z);
     }
     private void noisesInit(){
+        if(_noises!=null) return;
         _noises=new _NoiseNode[]{
             // 基础地形（低频高度）
             new _NoiseNode {

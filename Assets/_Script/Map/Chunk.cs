@@ -118,10 +118,17 @@ public class Chunk : MonoBehaviour
                             type,
                             GridType.DetailGrid
                         );
+                        
+                        if(worldY-_chunkLoader.GetPlayerPosition().y>=1){
+                            // Debug.Log("ground");
+                            Block block = _chunkLoader.GetBlock(MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(blockWorldPos)));
+                            block.blockObject.layer =LayerMask.NameToLayer("Ground");
+                        }
                     }
                 }
             }
         }
+        
     }
     int GenerateHeight(Vector3 wPos)
     {
@@ -323,12 +330,12 @@ public class Chunk : MonoBehaviour
 #region BlockType
 public enum BlockType
 {
-    Air = 0,
-    Dirt = 1,
-    Grass = 2,
+    Air,
+    Dirt ,
+    Grass,
     Water,
     Sand,
-    Stone = 3,
+    Stone ,
     Wood,
     Iron
 }

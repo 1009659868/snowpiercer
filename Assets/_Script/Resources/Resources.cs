@@ -23,6 +23,7 @@ public abstract class Resource : MonoBehaviour, IGrid, IStackable, ISelectable
     public abstract StackableType type { get; }
     public Vector3 anchor => stackAnchor.position;
     public bool isGrabbed { get; set; }
+    public bool isFlying { get; set; }
     public IStackable upper { get; set; }
     public IStackable lower { get; set; }
 
@@ -86,6 +87,22 @@ public abstract class Resource : MonoBehaviour, IGrid, IStackable, ISelectable
             mesh.material = oldMaterials[i];
             i++;
         }
+    }
+    public virtual void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null) Destroy(rb);
+            IStackable stackable=this.GetComponent<IStackable>();
+            // 延迟0.5秒后再允许被拾取
+            StartCoroutine(ResetFlying());
+        }
+    }
+    private IEnumerator ResetFlying()
+    {
+        yield return new WaitForSeconds(0.5f);
+        this.isFlying = false;
     }
 #endregion
 }

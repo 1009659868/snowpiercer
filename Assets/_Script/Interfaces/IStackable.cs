@@ -7,6 +7,7 @@ public interface IStackable : IGrid, ISelectable
     StackableType type { get; }
     Vector3 anchor { get; }
     bool isGrabbed { get; set; }
+    bool isFlying { get; set; }
     IStackable upper { get; set; }
     IStackable lower { get; set; }
     IStackable Peek();

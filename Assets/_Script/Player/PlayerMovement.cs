@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDash => PlayerKeyBinding.isPressed(binding.dashKeys);
     private bool isDashing { get => dashing.isDashing; set => dashing.isDashing = value; }
     public Vector3 velocity { get => body.velocity; set => body.velocity = value; }
-    public Direction? blockedDirection => movementChecker.blockedDirection;
+    // public Direction? blockedDirection => movementChecker.blockedDirection;
 
 
     private void Update()
@@ -36,31 +36,35 @@ public class PlayerMovement : MonoBehaviour
         
         if (isUp)
         {
-            if (blockedDirection != Direction.UP)
-            {
-                velocity = new Vector3(velocity.x, velocity.y, speed);
-            }
+            velocity = new Vector3(velocity.x, velocity.y, speed);
+            // if (blockedDirection != Direction.UP)
+            // {
+                
+            // }
         }
         else if (isDown)
         {
-            if (blockedDirection != Direction.DOWN)
-            {
-                velocity = new Vector3(velocity.x, velocity.y, -speed);
-            }
+            velocity = new Vector3(velocity.x, velocity.y, -speed);
+            // if (blockedDirection != Direction.DOWN)
+            // {
+                
+            // }
         }
         if (isRight)
         {
-            if (blockedDirection != Direction.RIGHT)
-            {
-                velocity = new Vector3(speed, velocity.y, velocity.z);
-            }
+            velocity = new Vector3(speed, velocity.y, velocity.z);
+            // if (blockedDirection != Direction.RIGHT)
+            // {
+                
+            // }
         }
         else if (isLeft)
         {
-            if (blockedDirection != Direction.LEFT)
-            {
-                velocity = new Vector3(-speed, velocity.y, velocity.z);
-            }
+            velocity = new Vector3(-speed, velocity.y, velocity.z);
+            // if (blockedDirection != Direction.LEFT)
+            // {
+                
+            // }
         }
 
         if (clampDiagonalSpeed) velocity = velocity.normalized * speed;

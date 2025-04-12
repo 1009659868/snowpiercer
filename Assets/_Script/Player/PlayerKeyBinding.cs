@@ -10,6 +10,7 @@ public class PlayerKeyBinding : MonoBehaviour
     public KeyCode[] moveLeftKeys;
     public KeyCode[] dashKeys;
     public KeyCode[] dropOrGrabKeys;
+    public KeyCode[] throwKeys;
 
 
     public static bool isPressed(IEnumerable<KeyCode> keys)
@@ -29,4 +30,14 @@ public class PlayerKeyBinding : MonoBehaviour
         }
         return false;
     }
+    public static bool isUp(IEnumerable<KeyCode> keys)
+    {
+        foreach (KeyCode key in keys)
+        {
+            if (Input.GetKeyUp(key)) return true;
+        }
+        return false;
+    }
+
+
 }

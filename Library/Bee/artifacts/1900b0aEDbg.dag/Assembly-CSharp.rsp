@@ -396,6 +396,7 @@
 "Assets/_Script/MyGrid.cs"
 "Assets/_Script/Noise.cs"
 "Assets/_Script/Player/FocusChecker.cs"
+"Assets/_Script/Player/MouseFocusChecker.cs"
 "Assets/_Script/Player/MovementChecker.cs"
 "Assets/_Script/Player/PlayerAnimator.cs"
 "Assets/_Script/Player/PlayerDamage.cs"

@@ -40,10 +40,9 @@ public class ChunkLoader : MonoBehaviour
         foreach (var block in blocks)
         {
             //预先生成400个备用
-
             _prefabMap.Add(block.type, block);
             if (block.HasVisual())
-                blockPool.Prewarm(block.type, block.blockPrefab, 400);
+                blockPool.Prewarm(block.type, block.blockPrefab, 100);
         }
         // Debug.Log("prewarm over");
     }

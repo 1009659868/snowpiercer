@@ -98,6 +98,7 @@
     <Compile Include="Assets\_Script\Player\PlayerAnimator.cs" />
     <Compile Include="Assets\_Script\Map\Chunk.cs" />
     <Compile Include="Assets\_Script\MapGenerator_V3.cs" />
+    <Compile Include="Assets\_Script\Player\MouseFocusChecker.cs" />
     <Compile Include="Assets\_Script\Map\ChunkUnloadDetector.cs" />
     <Compile Include="Assets\_Script\PrefabSettings.cs" />
     <Compile Include="Assets\_Script\MyGrid.cs" />

@@ -5,7 +5,8 @@ using UnityEngine;
 public class Selector : MonoBehaviour
 {
     [SerializeField] private PlayerStack playerStack;
-    [SerializeField] private FocusChecker focusChecker;
+    [SerializeField] private MouseFocusChecker mouseFocusChecker;
+    // [SerializeField] private FocusChecker focusChecker;
     [SerializeField] private StackablePreview previews;
     [SerializeField] private Material selectedMaterial;
     private IStackable selectedStackable;
@@ -14,10 +15,13 @@ public class Selector : MonoBehaviour
     
     public bool isPreviewing { get; private set; }
 
-
+    // 当前通过鼠标射线检测到的目标物体
+    
     private void Update()
     {
-        focus = focusChecker.focus;
+        // 每帧更新鼠标检测目标
+        focus = mouseFocusChecker.mouseFocus;
+        // focus = focusChecker.focus;
 
         isPreviewing = HandlePreview();
 
@@ -33,7 +37,6 @@ public class Selector : MonoBehaviour
 
         HandleSelection();
     }
-
     private bool HandlePreview()
     {
         if (playerStack.isStackEmpty)
@@ -41,21 +44,19 @@ public class Selector : MonoBehaviour
             previews.Disable();
             return false;
         }
-
         if (focus != null)
         {
             previews.Disable();
             return false;
         }
-
+        // 当玩家手上有物体时，在鼠标位置（转换为世界坐标，可以通过射线检测获得碰撞点或依据网格算法计算）展示预览
         if (playerStack.stackedType != StackableType.RAIL)
         {
-            previews.SetPosition(focusChecker.worldPosition, playerStack.stackedType);
+            previews.SetPosition(mouseFocusChecker.worldPosition, playerStack.stackedType);
             previews.SetPreview(playerStack.stackedType);
             return true;
         }
-
-        previews.SetPosition(focusChecker.worldPosition, StackableType.RAIL);
+        previews.SetPosition(mouseFocusChecker.worldPosition, StackableType.RAIL);
         previews.rail.Reset();
         
         if (previews.rail.upperNeighbor != null)
