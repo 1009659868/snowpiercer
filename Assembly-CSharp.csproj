@@ -70,6 +70,7 @@
     <Compile Include="Assets\_Script\Stackables\StackableBase.cs" />
     <Compile Include="Assets\_Script\Player\PlayerMovement.cs" />
     <Compile Include="Assets\_Script\Train\Car.cs" />
+    <Compile Include="Assets\_Script\Tower\MachineGun.cs" />
     <Compile Include="Assets\_Script\Map\ChunkAutoLoader.cs" />
     <Compile Include="Assets\_Script\Train\TrainMovement.cs" />
     <Compile Include="Assets\_Script\EventManager.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Assets\_Script\Train\RailSupply.cs" />
     <Compile Include="Assets\_Script\Map\MapGenerator.cs" />
     <Compile Include="Assets\_Script\Interfaces\IGrid.cs" />
+    <Compile Include="Assets\_Script\Map\Block.cs" />
     <Compile Include="Assets\_Script\Tools\ToolBase.cs" />
     <Compile Include="Assets\_Script\Resources\Wood.cs" />
     <Compile Include="Assets\_Script\Player\MovementChecker.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Assets\_Script\Map\ImprovedNoise.cs" />
     <Compile Include="Assets\_Script\TextureGenerator.cs" />
     <Compile Include="Assets\_Script\Player\Selector.cs" />
+    <Compile Include="Assets\_Script\Tower\Tower.cs" />
     <Compile Include="Assets\_Script\Train\WaterTank.cs" />
     <Compile Include="Assets\_Script\Train\Train Manager.cs" />
   </ItemGroup>

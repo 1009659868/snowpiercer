@@ -1039,6 +1039,111 @@ Transform:
   - {fileID: 672569791}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &543137247
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 543137251}
+  - component: {fileID: 543137250}
+  - component: {fileID: 543137249}
+  - component: {fileID: 543137248}
+  m_Layer: 0
+  m_Name: enemy
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &543137248
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543137247}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &543137249
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543137247}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &543137250
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543137247}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &543137251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543137247}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -8.49}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &549055163 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1801161783492581709, guid: badebc7abc9384313b854eb78202396b,
@@ -1786,6 +1891,7 @@ MonoBehaviour:
   - {fileID: 1972354493900551882, guid: 328fd8e4b4a2314438ffa705ad060f2d, type: 3}
   - {fileID: 2860149133480620250, guid: b6902990282ba85448882eded3ba4b42, type: 3}
   - {fileID: 3725079001903505066, guid: 021c952b7b8800646b7dca8b3071352b, type: 3}
+  - {fileID: 8653910061218419885, guid: d0bb82ab5576ae445817b33f19585d6b, type: 3}
   - {fileID: 3172187404680657403, guid: 7a949750475f29449869e3465438aeb3, type: 3}
   CarList: []
 --- !u!1 &1025491812 stripped
@@ -3270,65 +3376,75 @@ MonoBehaviour:
   _boundaryHolder: {fileID: 208848778}
   _chunkHolder: {fileID: 626186864}
   blocks:
-  - size: {x: 0, y: 0, z: 0}
+  - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 0}
     blockObject: {fileID: 0}
+    render: {fileID: 0}
     type: 0
     isDestroyable: 0
     isWalkable: 0
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 3773702871332299349, guid: a16b7224c60022f4dbce6ee79491a567,
       type: 3}
     blockObject: {fileID: 0}
+    render: {fileID: 928323099074921483, guid: a16b7224c60022f4dbce6ee79491a567, type: 3}
     type: 1
     isDestroyable: 0
     isWalkable: 1
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 5002137142087362993, guid: 4491b13fa0e90ac48b43c7dd88422edc,
       type: 3}
     blockObject: {fileID: 0}
+    render: {fileID: 6838808879682525895, guid: 4491b13fa0e90ac48b43c7dd88422edc,
+      type: 3}
     type: 2
     isDestroyable: 0
-    isWalkable: 0
+    isWalkable: 1
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 6220806491328333236, guid: 517ee3e933e356f48b09eff7022074b3,
       type: 3}
     blockObject: {fileID: 0}
+    render: {fileID: 5479161996761697802, guid: 517ee3e933e356f48b09eff7022074b3,
+      type: 3}
     type: 3
     isDestroyable: 0
     isWalkable: 0
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 3263708124791008450, guid: 71cced7cf245d6c4ab97c5486adb44e7,
       type: 3}
     blockObject: {fileID: 0}
+    render: {fileID: 1312455117177872660, guid: 71cced7cf245d6c4ab97c5486adb44e7,
+      type: 3}
     type: 4
     isDestroyable: 0
     isWalkable: 1
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   - size: {x: 1, y: 1, z: 1}
     blockPrefab: {fileID: 8862484656118993221, guid: 8685856a45e3ca649b603f5ff8104456,
       type: 3}
     blockObject: {fileID: 0}
+    render: {fileID: 5933720581007216874, guid: 8685856a45e3ca649b603f5ff8104456,
+      type: 3}
     type: 5
-    isDestroyable: 1
+    isDestroyable: 0
     isWalkable: 1
     isBuildable: 0
     isHarvestable: 0
-    visibleFaces: 
+    visibleFaces: 010101010101
   player: {fileID: 1256581962}
   loadDistance: 4
   unloadDistance: 10
@@ -3619,3 +3735,4 @@ SceneRoots:
   - {fileID: 1471372106}
   - {fileID: 316206977}
   - {fileID: 510835170}
+  - {fileID: 543137251}

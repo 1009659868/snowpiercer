@@ -26,6 +26,9 @@ public abstract class Car : MonoBehaviour
         // // 延迟初始化确保轨道系统已建立
         StartCoroutine(DelayedInit());
     }
+    protected virtual void Update(){
+        
+    }
     private IEnumerator DelayedInit()
     {
         yield return new WaitUntil(() => 
