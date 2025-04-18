@@ -3,23 +3,56 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+//防御塔的基类,后续防御塔会根据这个类完成多样的防御塔
 // 防御塔类，每个防御塔独立处理目标锁定和旋转
-public class Tower :MonoBehaviour
+public abstract class Tower :MonoBehaviour
 {
     public Transform partRotate; // 旋转部分
     public float range = 10f; // 索敌范围
     public string enemyTag = "Enemy"; // 敌人标签
     public float rotSpeed=10f; // 旋转速度
-    public Transform target; // 当前锁定的目标
+    
 
-    void Start(){
+    [Header("Bullet Settings")]
+    public GameObject bulletPrefab;//子弹的预制体
+    public Transform bulletPoint;//子弹生成的位置
+    public float bulletRate=2f; //发射子弹的速率
+    [SerializeField] protected BulletType bulletType = BulletType.Basic;
+    [SerializeField] protected float bulletSpeed = 20f;
+    [SerializeField] protected int bulletDamage = 1;
+    protected Transform target; // 当前锁定的目标
+    protected float fireCountdown=0f;
+    
+    protected virtual void Start(){
         InvokeRepeating("UpdateTarget",0,0.5f);
+        fireCountdown=1/bulletRate;
     }
-    void Update(){
+    protected virtual void Update(){
+        if(target==null) return;
         LockTarget();
+        // //倒计时发射子弹
+        // fireCountdown-=Time.deltaTime;
+        // if(fireCountdown<=0){
+        //     //发射子弹
+        //     Shoot();
+        //     fireCountdown=1/bulletRate;
+        // }
+
+    }
+    // 射击方法，子类可重写射击逻辑
+    protected virtual void Shoot(){
+        var bullet= BulletPool.Instance.GetBullet(
+            bulletType,
+            bulletPoint.position,
+            bulletPoint.rotation,
+            target
+        );
+        bullet.SetDamage(bulletDamage);
+        bullet.SetSpeed(bulletSpeed);
+
     }
     // 更新目标
-    public void UpdateTarget()
+    protected void UpdateTarget()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
         if (enemies.Length == 0)

@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 449633438782448985}
   - component: {fileID: 6344598843396257523}
+  - component: {fileID: 8530716390723558088}
   m_Layer: 0
   m_Name: Watet Tank
   m_TagString: Untagged
@@ -87,6 +88,27 @@ MonoBehaviour:
   - {fileID: 8469412920008693695}
   - {fileID: 3785863564235029147}
   - {fileID: 6351029110908531527}
+--- !u!65 &8530716390723558088
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2860149133480620250}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.7, y: 3.2866833, z: 2.914998}
+  m_Center: {x: 0, y: 1.8291918, z: 0.00000023841858}
 --- !u!1 &3762957332747212735
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,9 +11,8 @@ public abstract class Car : MonoBehaviour
     private TrainManager _TrainManager=>TrainManager._instance;
     private Train _Train=>Train._instance;
     private Coroutine moveCoroutine;
-    protected bool isPathCalculated;
+    protected bool isPathCalculated=false;
     public Rail attachedRail;
-    public float progressOffset;
     public int attachedRailIndex => Railway.Instance.rails.IndexOf(attachedRail);
     public GameObject[] destroyBeforeExplode;
     public ParticleSystem[] particles;
@@ -36,33 +35,10 @@ public abstract class Car : MonoBehaviour
             Railway.Instance.rails.Count > 0 &&
             Train._instance != null&&
             _TrainManager._activedCar.Count>0);
-        // if (attachedRail == null)
-        // {
-        //     // // 根据车厢顺序自动分配初始轨道
-        //     // int index = Train.Instance.cars.IndexOf(this);
-        //     // int RIndex=Train.Instance.cars.Count-index-1<0?Train.Instance.cars.Count:Train.Instance.cars.Count-index-1;
-        //     // AttachToRail(Railway.Instance.rails[RIndex]);
-        //     Debug.Log(_name);
-        //     //_Train.cars.Add(_TrainManager.GetCar(_name).GetComponent<Car>());
-        //     int index = _TrainManager.CarList.IndexOf(this);
-        //     Debug.Log(index);
-        //     int railIndex = _TrainManager._activedCar.Count - index - 1;
-        //     railIndex = Mathf.Clamp(railIndex, 0, Railway.Instance.rails.Count - 1);
-        //     AttachToRail(Railway.Instance.rails[railIndex]);
-        // }
+        
         if(main==null)
         main = Train._instance; // 直接引用单例实例
     }
-    // private void Awake()
-    // {
-    //     main = Train._instance; // 直接引用单例实例
-    //     // main = this.GetComponentInParent<Train>();
-    //     // 添加保护性检查
-    //     if (main == null)
-    //     {
-    //         Debug.LogError("Train instance not found! Ensure Train script exists in the scene.");
-    //     }
-    // }
 
     private void OnEnable()
     {
@@ -107,12 +83,13 @@ public abstract class Car : MonoBehaviour
         isExploded = true;
     }
 
+    
+
     public virtual void AttachToRail(Rail rail)
     {
         attachedRail = rail;
         ResetPositionToRailStart();
         isPathCalculated = false;
-        
     }
 
     public virtual void AttachToNextRail()
@@ -155,7 +132,9 @@ public abstract class Car : MonoBehaviour
 
         isPathCalculated = true;
     }
-
+    public void PathCalculated(){
+        isPathCalculated=!isPathCalculated;
+    }
 
     public virtual IEnumerator Move_Co()
     {

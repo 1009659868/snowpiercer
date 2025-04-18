@@ -18,7 +18,7 @@ public class ChunkLoader : MonoBehaviour
     public Transform _chunkHolder;
     [Header("Blocks")]
     [SerializeField] private Block[] blocks;
-    private GameObjectPool blockPool;
+    private BlockPool blockPool;
     private Dictionary<BlockType, Block> _prefabMap = new Dictionary<BlockType, Block>();
     private Dictionary<Vector3, Block> _activeBlocks = new Dictionary<Vector3, Block>();
     private Dictionary<Vector3, Chunk> _activeChunks = new Dictionary<Vector3, Chunk>();
@@ -34,7 +34,7 @@ public class ChunkLoader : MonoBehaviour
     void Awake()
     {
         _instance = this;
-        blockPool = new GameObjectPool(transform);
+        blockPool = new BlockPool(transform);
 
         //预热对象池
         foreach (var block in blocks)

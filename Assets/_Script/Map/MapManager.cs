@@ -111,17 +111,17 @@ public class MapManager : MonoBehaviour
             // 修改cube大小=cellSize*groundSize.x*groundSize.y
             gridCube.transform.localScale = new Vector3(cellSize*groundSize.x, cellSize*groundSize.y, cellSize*groundSize.z);
         }
-        if(isNoiseChanged()){
-            // 清空地图
-            ChunkLoader._instance.ClearAll();
-            // 更新噪声配置缓存
-            _lastNoiseSettings.Clear();
-            foreach (var noise in _noises)
-            {
-                _lastNoiseSettings[noise.type] = noise.settings; // 复制当前的噪声配置
-            }
+        // if(isNoiseChanged()){
+        //     // 清空地图
+        //     ChunkLoader._instance.ClearAll();
+        //     // 更新噪声配置缓存
+        //     _lastNoiseSettings.Clear();
+        //     foreach (var noise in _noises)
+        //     {
+        //         _lastNoiseSettings[noise.type] = noise.settings; // 复制当前的噪声配置
+        //     }
             
-        }
+        // }
         
     }
     private bool isNoiseChanged(){

@@ -69,8 +69,9 @@
     <Compile Include="Assets\_Script\Player\FocusChecker.cs" />
     <Compile Include="Assets\_Script\Stackables\StackableBase.cs" />
     <Compile Include="Assets\_Script\Player\PlayerMovement.cs" />
+    <Compile Include="Assets\_Script\Train\DockTrain.cs" />
+    <Compile Include="Assets\_Script\Tools\BlockPool.cs" />
     <Compile Include="Assets\_Script\Train\Car.cs" />
-    <Compile Include="Assets\_Script\Tower\MachineGun.cs" />
     <Compile Include="Assets\_Script\Map\ChunkAutoLoader.cs" />
     <Compile Include="Assets\_Script\Train\TrainMovement.cs" />
     <Compile Include="Assets\_Script\EventManager.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Assets\_Script\Tools\ToolBase.cs" />
     <Compile Include="Assets\_Script\Resources\Wood.cs" />
     <Compile Include="Assets\_Script\Player\MovementChecker.cs" />
+    <Compile Include="Assets\_Script\Tower\Bullet\BasicBullet.cs" />
     <Compile Include="Assets\_Script\Interfaces\ILinkable.cs" />
     <Compile Include="Assets\_Script\Resources\Rock.cs" />
     <Compile Include="Assets\_Script\Stackables\Rail.cs" />
@@ -103,11 +105,13 @@
     <Compile Include="Assets\_Script\Player\MouseFocusChecker.cs" />
     <Compile Include="Assets\_Script\Map\ChunkUnloadDetector.cs" />
     <Compile Include="Assets\_Script\PrefabSettings.cs" />
+    <Compile Include="Assets\_Script\Tower\MGTower.cs" />
     <Compile Include="Assets\_Script\MyGrid.cs" />
     <Compile Include="Assets\_Script\Interfaces\IDamagable.cs" />
     <Compile Include="Assets\_Script\Map\World.cs" />
     <Compile Include="Assets\_Script\Train\RailCrafter.cs" />
     <Compile Include="Assets\_Script\Train\Train.cs" />
+    <Compile Include="Assets\_Script\Tools\BulletPool.cs" />
     <Compile Include="Assets\_Script\Player\PlayerStack.cs" />
     <Compile Include="Assets\_Script\Map\MapManager.cs" />
     <Compile Include="Assets\_Script\Train\TrainEngine.cs" />
@@ -121,6 +125,7 @@
     <Compile Include="Assets\_Script\Player\Selector.cs" />
     <Compile Include="Assets\_Script\Tower\Tower.cs" />
     <Compile Include="Assets\_Script\Train\WaterTank.cs" />
+    <Compile Include="Assets\_Script\Tower\Bullet\Bullet.cs" />
     <Compile Include="Assets\_Script\Train\Train Manager.cs" />
   </ItemGroup>
   <ItemGroup>
