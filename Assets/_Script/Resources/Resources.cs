@@ -17,6 +17,7 @@ public abstract class Resource : MonoBehaviour, IGrid, IStackable, ISelectable
         transform.position = position;
         transform.eulerAngles = Vector3.zero;
     }
+
 #endregion
 
 #region IStackable interface
@@ -60,6 +61,30 @@ public abstract class Resource : MonoBehaviour, IGrid, IStackable, ISelectable
         transform.position = position;
         transform.rotation = Quaternion.Euler(rotation);
     }
+    public virtual void SnapToStorage(Transform position,Transform parent,Vector3 scale){
+        var rb = GetComponent<Rigidbody>();
+        if(rb!=null) Destroy(rb);
+
+        // 断开所有连接
+        if (this is ILinkable linkable)
+        {
+            linkable.previous = null;
+            linkable.next = null;
+        }
+
+
+        //设置父物体和本地位置/旋转
+        transform.SetParent(parent);
+        transform.localPosition = position.localPosition;
+        transform.localRotation = Quaternion.identity;
+        transform.localScale = scale;
+        //重置状态
+        isGrabbed = false;
+        isFlying = false;
+        Clear();
+        
+    }
+
 #endregion
 
 #region ISelectable interface

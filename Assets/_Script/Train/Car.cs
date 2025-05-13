@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class Car : MonoBehaviour
+public abstract class Car : MonoBehaviour,ISelectable
 {
     private static Train main;
     public string _name;
@@ -164,4 +164,29 @@ public abstract class Car : MonoBehaviour
             yield return 0;
         }
     }
+#region ISelectable interface
+    public List<Material> oldMaterials{ get; set; }
+    public virtual void Select(Material material)
+    {   
+        // bool isInit = (oldMaterials == null);
+
+        // if (isInit) oldMaterials = new List<Material>();
+
+        // foreach (var mesh in this.GetComponentsInChildren<MeshRenderer>())
+        // {
+        //     if (isInit) oldMaterials.Add(mesh.material);
+
+        //     mesh.material = material;
+        // }
+    }
+    public virtual void Deselect()
+    {
+        // int i = 0;
+        // foreach (var mesh in this.GetComponentsInChildren<MeshRenderer>())
+        // {
+        //     mesh.material = oldMaterials[i];
+        //     i++;
+        // }
+    }
+#endregion
 }

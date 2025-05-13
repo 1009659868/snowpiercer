@@ -50,6 +50,32 @@ public class PlayerStack : MonoBehaviour
         CarryStackables();
         HandleHighThrow();
     }
+    // 从玩家手中取出顶部物品
+    public IStackable Pop(){
+        if(isStackEmpty) return null;
+
+        var item = stack.Pop();
+        item.isGrabbed = false;
+        item.Clear();
+
+        //如果栈不为空,更新新的顶部物品状态
+        if(!isStackEmpty){
+            stack.Peek().upper = null;
+        }
+        return item;
+    }
+
+    //将物品放入玩家手中
+    public void push(IStackable item){
+        if(isStackFull) return;
+
+        item.isGrabbed = true;
+        if(!isStackEmpty){
+            item.lower = stack.Peek();
+            stack.Peek().upper = item;
+        }
+        stack.Push(item);
+    }
 
     private void HandleGrab()
     {
@@ -124,6 +150,14 @@ public class PlayerStack : MonoBehaviour
                 }
             }
         }
+        // else if(focus.TryGetComponent(out IInteractable interactable)){
+        //     //从可交互物体中获取物体
+        //     //待完善
+        //     if(interactable.CanInteract(this)){
+        //         stackEvent = StackEvent.GRAB;
+        //         interactable.Interact(this);
+        //     }
+        // }
     }
 
     private void HandleDrop()
@@ -165,6 +199,14 @@ public class PlayerStack : MonoBehaviour
                     peek = stackable;
                 }
             }
+            // else if(focus.TryGetComponent(out IInteractable interactable)){
+            //     //放置物体到可交互物体中
+            //     //待完善
+            //     if(interactable.CanInteract(this)){
+            //         stackEvent = StackEvent.DROP;
+            //         interactable.Interact(this);
+            //     }
+            // }
         }
         else
         {

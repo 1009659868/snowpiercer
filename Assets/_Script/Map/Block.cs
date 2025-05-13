@@ -18,6 +18,7 @@ public class Block
     public bool isWalkable;
     public bool isBuildable;
     public bool isHarvestable;
+    public bool isHaveHarvest=false;
     // 6个面是否可见（上、下、左、右、前、后）
     public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true };
     // 记录每个面被哪些邻居遮挡（用于精确恢复）

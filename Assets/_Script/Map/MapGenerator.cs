@@ -20,6 +20,7 @@ public class MapGenerator : MonoBehaviour
     private ChunkLoader _chunkLoader => ChunkLoader._instance;
 
     public Chunk chunkPrefab;
+    public GameObject treePrefab;
 
     [Header("Generation Settings")]
     [SerializeField] private bool _generateOnStart = true;
@@ -374,7 +375,7 @@ public class MapGenerator : MonoBehaviour
         }
         else
         // 4. 地下层（表层以下）生成石头块
-            return BlockType.Stone;
+        return BlockType.Stone;
         //确定水方块:通过高度,温度和湿度确定
 
         //确定草方块:只可以在地表,通过高度,温度确定

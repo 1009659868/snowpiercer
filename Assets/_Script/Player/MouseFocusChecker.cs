@@ -29,18 +29,24 @@ public class MouseFocusChecker : MonoBehaviour
                 worldPosition = MyGrid._instance.GroundGridToWorld(MyGrid._instance.WorldToGroundGrid(hit.point));
 
                 GameObject hitObject = hit.collider.gameObject;
-
                 if (hitObject.TryGetComponent(out IStackable stackable))
                 {
                     if (!stackable.isGrabbed&&!stackable.isFlying)
                     {
+                        // Debug.Log("stackable");
                         return hitObject;
                     }
                 }
+                // else if(hitObject.TryGetComponent(out IInteractable interactable)){
+                //     // Debug.Log("interactable");
+                //     return hitObject;
+                // }
                 else if (hitObject.TryGetComponent(out IHarvestable harvestable))
                 {
+                    // Debug.Log("IHarvestable");
                     return hitObject;
                 }
+                
             }
             return null;
         }

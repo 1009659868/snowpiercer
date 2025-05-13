@@ -8,6 +8,7 @@ public class PlayerKeyBinding : MonoBehaviour
     public KeyCode[] moveDownKeys;
     public KeyCode[] moveRightKeys;
     public KeyCode[] moveLeftKeys;
+    public KeyCode[] JumpKeys;
     public KeyCode[] dashKeys;
     public KeyCode[] dropOrGrabKeys;
     public KeyCode[] throwKeys;

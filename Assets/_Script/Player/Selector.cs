@@ -10,6 +10,7 @@ public class Selector : MonoBehaviour
     [SerializeField] private StackablePreview previews;
     [SerializeField] private Material selectedMaterial;
     private IStackable selectedStackable;
+    private IInteractable selectedInteractable;
 
     private GameObject focus { get; set; }
     
@@ -27,15 +28,23 @@ public class Selector : MonoBehaviour
 
         if (isPreviewing)
         {
-            if (selectedStackable != null)
-            {
-                selectedStackable.Deselect();
-                selectedStackable = null;
-            }
+            ClearSelections();
             return;
         }
 
         HandleSelection();
+    }
+    private void ClearSelections(){
+        if (selectedStackable != null)
+        {
+            selectedStackable.Deselect();
+            selectedStackable = null;
+        }
+        if (selectedInteractable != null)
+        {
+            selectedInteractable.Deselect();
+            selectedInteractable = null;
+        }
     }
     private bool HandlePreview()
     {
@@ -49,6 +58,7 @@ public class Selector : MonoBehaviour
             previews.Disable();
             return false;
         }
+
         // 当玩家手上有物体时，在鼠标位置（转换为世界坐标，可以通过射线检测获得碰撞点或依据网格算法计算）展示预览
         if (playerStack.stackedType != StackableType.RAIL)
         {
@@ -100,17 +110,24 @@ public class Selector : MonoBehaviour
     {
         if (focus != null)
         {
+            
+            // if(focus.TryGetComponent(out IInteractable interactable)){
+            //     if(interactable == selectedInteractable) return;
+
+            //     ClearSelections();
+
+            //     interactable.Select(selectedMaterial);
+            //     selectedInteractable = interactable;
+            //     return;
+            // }
+
             if (focus.TryGetComponent(out IStackable stackable))
             {
                 stackable = stackable.Peek();
                 
                 if (stackable == selectedStackable) return;
 
-                if (selectedStackable != null)
-                {
-                    selectedStackable.Deselect();
-                    selectedStackable = null;
-                }
+                ClearSelections();
 
                 try
                 {
@@ -124,11 +141,7 @@ public class Selector : MonoBehaviour
         }
         else
         {
-            if (selectedStackable != null)
-            {
-                selectedStackable.Deselect();
-                selectedStackable = null;
-            }
+            ClearSelections();
         }
     }
 }

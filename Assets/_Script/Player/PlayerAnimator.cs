@@ -10,8 +10,9 @@ public class PlayerAnimator : MonoBehaviour
 
     private void Update()
     {
-        if (movement.velocity.magnitude != 0f)
+        if (movement.velocity.magnitude > 0.3f)
         {
+            // Debug.Log("velocity.magnitude="+movement.velocity.magnitude);
             animator.Play("Walk");
         }
         else

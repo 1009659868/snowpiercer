@@ -354,7 +354,7 @@ public class ChunkLoader : MonoBehaviour
     {
         if (!_activeBlocks.TryGetValue(position, out Block block))
         {
-            Debug.LogError("No block found at position: " + position);
+            // Debug.LogError("No block found at position: " + position);
             return new Block();
         }
         return block;

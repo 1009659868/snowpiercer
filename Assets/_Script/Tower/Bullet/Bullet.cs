@@ -76,7 +76,7 @@ public abstract class Bullet : MonoBehaviour, IBullet
         {
             BulletPool.Instance.ReturnToPool(this);
             //ApplyDamage(other.GetComponent<IDamageable>());
-            Debug.Log("fuc");
+            // Debug.Log("fuc");
             
         }
     }

@@ -17,7 +17,6 @@ public class Chunk : MonoBehaviour
     public Mesh mesh;
     public GameObject ChunkObject;
     public Vector3 position;
-
     public static List<Chunk> chunks = new List<Chunk>();
 
     public static int chunkWidth = 16;
@@ -34,6 +33,7 @@ public class Chunk : MonoBehaviour
     Vector3 offset0;
     Vector3 offset1;
     Vector3 offset2;
+    System.Random rand;
     public static Chunk GetChunk(Vector3 wPos)
     {
         for (int i = 0; i < chunks.Count; i++)
@@ -50,6 +50,7 @@ public class Chunk : MonoBehaviour
     void Start()
     {
         _chunkLoader.RegisterChunk(this);
+        rand=new System.Random(100);
         //初始化地图
         InitMap();
     }
@@ -81,10 +82,11 @@ public class Chunk : MonoBehaviour
                 float worldX = gridX * MyGrid._instance.detailCellSize.x;
                 float worldZ = gridZ * MyGrid._instance.detailCellSize.z;
 
-                float combinNoise= _noiseGenerator.GetNoiseValue(new Vector3(worldX, 0, worldZ));
+                // float combinNoise= _noiseGenerator.GetNoiseValue(new Vector3(worldX, 0, worldZ));
                 float heightNoise=_noiseGenerator.GetHeightNoise(new Vector3(worldX, 0, worldZ));
                 float moistureNoise = _noiseGenerator.GetMoistureNoise(new Vector3(worldX, 0, worldZ));
                 float temperatureNoise = _noiseGenerator.GetTemperatureNoise(new Vector3(worldX, 0, worldZ));
+                float resourceNoise = _noiseGenerator.GetResourceNoise(new Vector3(worldX, 0,worldZ));
                 // Debug.Log("combinNoise:"+combinNoise);
                 // Debug.Log("heightNoise:"+heightNoise);
                 // 获取地表高度（使用多种噪声混合）
@@ -101,6 +103,10 @@ public class Chunk : MonoBehaviour
 
                     //  跳过初始层
                     if(worldY==_chunkLoader.GetPlayerPosition().y) continue;
+
+                    //随机资源
+                    
+
                     // 确定方块类型
                     BlockType type = _mapGenerator.DetermineBlockType(
                         worldY,
@@ -124,11 +130,49 @@ public class Chunk : MonoBehaviour
                             Block block = _chunkLoader.GetBlock(MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(blockWorldPos)));
                             block.blockObject.layer =LayerMask.NameToLayer("Ground");
                         }
+                        if(worldY==surfaceHeight){
+                            Block block = _chunkLoader.GetBlock(MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(blockWorldPos)));
+                            RandomResoure(block,block.type,resourceNoise);
+                        }
                     }
                 }
             }
         }
         
+    }
+    void RandomResoure(Block block ,BlockType blockType ,float resourceNoise){
+        Vector3 pos =block.position;
+        
+        if(resourceNoise*10<2) return;
+        float[,] dir=new float[8,2]{
+            {-4,0}, //上
+            {4,0},  //下
+            {0,-4}, //左
+            {0,4},  //右
+            {-4,-4},//左上
+            {-4,4}, //右下
+            {4,-4}, //左下
+            {4,4}   //右下
+        };
+        for(int i=0;i<8;i++){
+            var temp=new Vector3(pos.x+dir[i,0],pos.y,pos.z+dir[i,1]);
+            Block tempblock = _chunkLoader.GetBlock(temp);
+            if(tempblock.isHaveHarvest) return;
+        }
+        pos+=new Vector3(0,2,0);
+        // Debug.Log(resourceNoise);
+        GameObject tree=_mapGenerator.treePrefab;
+        switch(blockType){
+            case BlockType.Dirt:
+                Instantiate(tree,pos,Quaternion.identity);
+                break;
+            case BlockType.Grass:
+                Instantiate(tree,pos,Quaternion.identity);
+                break;
+            default: 
+                return;
+        }
+        block.isHaveHarvest=true;
     }
     int GenerateHeight(Vector3 wPos)
     {

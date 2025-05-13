@@ -33,6 +33,7 @@ public class MapManager : MonoBehaviour
             _noiseSettings.Add(noise.type, noise.settings);
             // NoiseGenerator._instance.GenerateNoise(noise.type, noise.settings);
         }
+        Debug.Log("OK");
     }
     
     public NoiseSettings GetNoiseSettings(NoiseType noiseType)
