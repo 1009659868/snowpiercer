@@ -406,6 +406,7 @@
 "Assets/_Script/Audio/ButtonAudio.cs"
 "Assets/_Script/Camera/CameraFollow.cs"
 "Assets/_Script/EventManager.cs"
+"Assets/_Script/Game/GameManager.cs"
 "Assets/_Script/Harvestables/Harvestable.cs"
 "Assets/_Script/Harvestables/MyTree.cs"
 "Assets/_Script/Helper.cs"
