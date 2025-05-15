@@ -17,4 +17,4 @@ public interface IStackable : IGrid, ISelectable
     void SnapToStack(Vector3 position, Vector3 rotation);
 }
 
-public enum StackableType { RAIL, WOOD, ROCK }
+public enum StackableType { RAIL, WOOD, ROCK,NONE }

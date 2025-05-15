@@ -7,6 +7,7 @@ public class MapManager : MonoBehaviour
     public static MapManager _instance;
     public GameObject gridCube;
     public Transform mapHolder;
+    public Transform _resourceHolder;
     public const int cellSize = 4;
     [Header("Map Settings")]
     [SerializeField] private Vector3 _mapSize;
@@ -33,7 +34,7 @@ public class MapManager : MonoBehaviour
             _noiseSettings.Add(noise.type, noise.settings);
             // NoiseGenerator._instance.GenerateNoise(noise.type, noise.settings);
         }
-        Debug.Log("OK");
+        // Debug.Log("OK");
     }
     
     public NoiseSettings GetNoiseSettings(NoiseType noiseType)

@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class PlayerStack : MonoBehaviour
 {
-    public const int MAX_STACK_SIZE = 3;
+    public const int MAX_STACK_SIZE = 4;
     [SerializeField] private MouseFocusChecker mouseFocusChecker;
     [SerializeField] private PlayerKeyBinding binding;
     [SerializeField] private Selector selector;
@@ -12,15 +13,14 @@ public class PlayerStack : MonoBehaviour
     
     private Stack<IStackable> stack = new Stack<IStackable>();
     private StackEvent stackEvent = StackEvent.NONE;
-    
-    public bool isDropOrGrab => PlayerKeyBinding.isDown(binding.dropOrGrabKeys);
-    public bool isHighThrowDown => PlayerKeyBinding.isDown(binding.throwKeys);
-    public bool isHighThrowHold => PlayerKeyBinding.isPressed(binding.throwKeys);
-    public bool isHighThrowUp => PlayerKeyBinding.isUp(binding.throwKeys);
-    public StackableType stackedType => stack.Peek().type;
-    public bool isStackEmpty => stack.Count == 0;
-    public bool isStackFull => stack.Count >= MAX_STACK_SIZE;
 
+    [SerializeField]public bool isDropOrGrab => PlayerKeyBinding.isUp(binding.dropOrGrabKeys);
+    [SerializeField]public bool isHighThrowDown => PlayerKeyBinding.isDown(binding.throwKeys);
+    [SerializeField]public bool isHighThrowHold => PlayerKeyBinding.isPressed(binding.throwKeys);
+    [SerializeField]public bool isHighThrowUp => PlayerKeyBinding.isUp(binding.throwKeys);
+    [SerializeField]public StackableType stackedType => stack.Peek().type;
+    [SerializeField]public bool isStackEmpty => stack.Count == 0;
+    [SerializeField]public bool isStackFull => stack.Count >= MAX_STACK_SIZE;
     private GameObject focus { get; set; }
     [Header("Range")]
     [SerializeField] private float interactRange = 5f;
@@ -41,7 +41,6 @@ public class PlayerStack : MonoBehaviour
     private void Update()
     {
         stackEvent = StackEvent.NONE;
-        // focus = focusChecker.focus;
         focus = mouseFocusChecker.mouseFocus;
 
         HandleRailLinking();
@@ -79,13 +78,13 @@ public class PlayerStack : MonoBehaviour
 
     private void HandleGrab()
     {
-        
         if (stackEvent != StackEvent.NONE) return;
 
         if (isStackFull) return;
 
         if (focus == null) return;
-        if (focus.TryGetComponent<Rigidbody>(out var rb) && rb != null) return;
+
+        // if (focus.TryGetComponent<Rigidbody>(out var rb) && rb != null) return;
 
         if (focus.TryGetComponent(out IStackable stackable))
         {
@@ -246,17 +245,17 @@ public class PlayerStack : MonoBehaviour
 
         if (!isDropOrGrab) return;
 
-        if (stack.TryPeek(out IStackable test))
-        {
-            try
-            {
-                var temp = (ILinkable)test;
-            }
-            catch (System.Exception)
-            {
-                return;
-            }
-        }
+        // if (stack.TryPeek(out IStackable test))
+        // {
+        //     try
+        //     {
+        //         var temp = (ILinkable)test;
+        //     }
+        //     catch (System.Exception)
+        //     {
+        //         return;
+        //     }
+        // }
 
         if (stack.TryPop(out IStackable stackable))
         {

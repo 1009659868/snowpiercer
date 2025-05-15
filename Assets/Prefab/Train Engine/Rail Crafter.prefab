@@ -9830,9 +9830,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f0d4b7f77c44294d92ad3b53d443583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
   _name: Rail Crafter
   attachedRail: {fileID: 0}
-  progressOffset: 0
   destroyBeforeExplode: []
   particles:
   - {fileID: 5197680095380734121}

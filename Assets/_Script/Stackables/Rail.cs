@@ -22,8 +22,6 @@ public class Rail : StackableBase
     public override ILinkable lowerNeighbor => GetNeighbor(transform.position + (Vector3.back * MyGrid._instance.cellSize));
     public override ILinkable rightNeighbor => GetNeighbor(transform.position + (Vector3.right * MyGrid._instance.cellSize));
     public override ILinkable leftNeighbor => GetNeighbor(transform.position + (Vector3.left * MyGrid._instance.cellSize));
-
-
     public override void Reset()
     {
         base.Reset();
@@ -192,7 +190,7 @@ public class Rail : StackableBase
     {
         if (this.GetComponent<IStackable>().lower != null) return null;
 
-        var colliders = Physics.OverlapBox(pos + Vector3.up * overlapBoxHeight, new Vector3(0.5f, overlapBoxHeight, 0.5f), Quaternion.identity, targetLayer, QueryTriggerInteraction.Collide);
+        var colliders = Physics.OverlapBox(pos + Vector3.up * overlapBoxHeight, new Vector3(1f, overlapBoxHeight, 1f), Quaternion.identity, targetLayer, QueryTriggerInteraction.Collide);
         foreach (var collider in colliders)
         {
             if (collider.TryGetComponent(out ILinkable rail))

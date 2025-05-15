@@ -10,11 +10,10 @@ public class Selector : MonoBehaviour
     [SerializeField] private StackablePreview previews;
     [SerializeField] private Material selectedMaterial;
     private IStackable selectedStackable;
-    private IInteractable selectedInteractable;
-
     private GameObject focus { get; set; }
     
     public bool isPreviewing { get; private set; }
+    public bool _isPreviewing;
 
     // 当前通过鼠标射线检测到的目标物体
     
@@ -24,7 +23,7 @@ public class Selector : MonoBehaviour
         focus = mouseFocusChecker.mouseFocus;
         // focus = focusChecker.focus;
 
-        isPreviewing = HandlePreview();
+        _isPreviewing=isPreviewing = HandlePreview();
 
         if (isPreviewing)
         {
@@ -40,11 +39,6 @@ public class Selector : MonoBehaviour
             selectedStackable.Deselect();
             selectedStackable = null;
         }
-        if (selectedInteractable != null)
-        {
-            selectedInteractable.Deselect();
-            selectedInteractable = null;
-        }
     }
     private bool HandlePreview()
     {
@@ -58,7 +52,6 @@ public class Selector : MonoBehaviour
             previews.Disable();
             return false;
         }
-
         // 当玩家手上有物体时，在鼠标位置（转换为世界坐标，可以通过射线检测获得碰撞点或依据网格算法计算）展示预览
         if (playerStack.stackedType != StackableType.RAIL)
         {

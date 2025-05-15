@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class Car : MonoBehaviour,ISelectable
+public abstract class Car : Node
 {
     private static Train main;
     public string _name;
@@ -20,8 +20,9 @@ public abstract class Car : MonoBehaviour,ISelectable
     public virtual float progress => main.progress;
     public bool isExploded { get; private set; }
     
-    protected virtual void Start()
+    protected override void Start()
     {
+        base.Start();
         // // 延迟初始化确保轨道系统已建立
         StartCoroutine(DelayedInit());
     }
@@ -164,29 +165,4 @@ public abstract class Car : MonoBehaviour,ISelectable
             yield return 0;
         }
     }
-#region ISelectable interface
-    public List<Material> oldMaterials{ get; set; }
-    public virtual void Select(Material material)
-    {   
-        // bool isInit = (oldMaterials == null);
-
-        // if (isInit) oldMaterials = new List<Material>();
-
-        // foreach (var mesh in this.GetComponentsInChildren<MeshRenderer>())
-        // {
-        //     if (isInit) oldMaterials.Add(mesh.material);
-
-        //     mesh.material = material;
-        // }
-    }
-    public virtual void Deselect()
-    {
-        // int i = 0;
-        // foreach (var mesh in this.GetComponentsInChildren<MeshRenderer>())
-        // {
-        //     mesh.material = oldMaterials[i];
-        //     i++;
-        // }
-    }
-#endregion
 }

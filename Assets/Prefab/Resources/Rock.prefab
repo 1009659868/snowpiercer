@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stackAnchor: {fileID: 6573431426628466883}
+  Node: {fileID: 1068028540849175890, guid: 4c004570b5a17e84fab64c8bc1efb8ee, type: 3}
 --- !u!4 &6573431426628466883 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4292632281175595780, guid: 7c369bde3675e4f7cb920028602c0fa4,

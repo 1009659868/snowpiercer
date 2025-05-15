@@ -27,7 +27,10 @@ public class MouseFocusChecker : MonoBehaviour
                 // 若需要网格对齐，可调用类似 MyGrid 的方法进行转换
                 // 例如：worldPosition = MyGrid._instance.GroundGridToWorld(MyGrid._instance.WorldToGroundGrid(hit.point));
                 worldPosition = MyGrid._instance.GroundGridToWorld(MyGrid._instance.WorldToGroundGrid(hit.point));
-
+                // Debug.Log("_____________-");
+                // Debug.Log(worldPosition);
+                // Debug.Log(hit.point);
+            
                 GameObject hitObject = hit.collider.gameObject;
                 if (hitObject.TryGetComponent(out IStackable stackable))
                 {

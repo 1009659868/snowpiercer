@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1598732423630120912}
   - component: {fileID: 1312455117177872660}
   - component: {fileID: 1860646366175705071}
+  - component: {fileID: 5761563651287541921}
   m_Layer: 7
   m_Name: sand
   m_TagString: ground
@@ -105,3 +106,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5761563651287541921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3263708124791008450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d443f704cff2cee438078f2e7e77e6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
+  size: {x: 0, y: 0, z: 0}
+  prefab: {fileID: 3263708124791008450}
+  blockObject: {fileID: 3263708124791008450}
+  type: 4
+  isDestroyable: 0
+  isWalkable: 1
+  isBuildable: 0
+  isHarvestable: 0
+  isHaveHarvest: 0
+  visibleFaces: 010101010101

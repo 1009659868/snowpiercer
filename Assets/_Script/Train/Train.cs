@@ -127,7 +127,6 @@ public class Train : MonoBehaviour
         // 根据进度找到轨道上的位置
         Tuple<Vector3,Rail> position = GetPositionOnRail(progress);
         car.transform.position = position.Item1;
-        car.transform.SetParent(Railway.Instance.transform);
         car.attachedRail = position.Item2;
         car.PathCalculated();
         this.progress = progress;

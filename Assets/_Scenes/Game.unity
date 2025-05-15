@@ -556,6 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridCube: {fileID: 1365123452}
   mapHolder: {fileID: 1955282213}
+  _resourceHolder: {fileID: 681084700}
   _mapSize: {x: 100, y: 10, z: 100}
   _groundSize: {x: 100, y: 3, z: 100}
   _noises:
@@ -843,7 +844,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 510835170}
+    m_TransformParent: {fileID: 681084700}
     m_Modifications:
     - target: {fileID: 1459704541263514514, guid: badebc7abc9384313b854eb78202396b,
         type: 3}
@@ -1035,9 +1036,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1825249143}
-  - {fileID: 549055163}
-  - {fileID: 672569791}
+  - {fileID: 681084700}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &520839024
@@ -1399,13 +1398,47 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93effebf335674ee8b25184193090a65, type: 3}
+--- !u!1 &681084699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 681084700}
+  m_Layer: 0
+  m_Name: ResourceHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &681084700
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 681084699}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1825249143}
+  - {fileID: 549055163}
+  - {fileID: 672569791}
+  m_Father: {fileID: 510835170}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &738381553
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 510835170}
+    m_TransformParent: {fileID: 681084700}
     m_Modifications:
     - target: {fileID: 1459704541263514514, guid: badebc7abc9384313b854eb78202396b,
         type: 3}
@@ -1966,7 +1999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70038df812006644ab7d812c32b292f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _Holder: {fileID: 1223094943}
+  _Holder: {fileID: 177740280}
   cars:
   - {fileID: 1972354493900551882, guid: 328fd8e4b4a2314438ffa705ad060f2d, type: 3}
   - {fileID: 2860149133480620250, guid: b6902990282ba85448882eded3ba4b42, type: 3}
@@ -3377,7 +3410,7 @@ Transform:
   - {fileID: 1422553001}
   - {fileID: 372590513}
   - {fileID: 1679032782}
-  m_Father: {fileID: 510835170}
+  m_Father: {fileID: 681084700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1867791800
 PrefabInstance:
@@ -3614,81 +3647,12 @@ MonoBehaviour:
   _boundaryHolder: {fileID: 208848778}
   _chunkHolder: {fileID: 626186864}
   blocks:
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 0}
-    blockObject: {fileID: 0}
-    render: {fileID: 0}
-    type: 0
-    isDestroyable: 0
-    isWalkable: 0
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 3773702871332299349, guid: a16b7224c60022f4dbce6ee79491a567,
-      type: 3}
-    blockObject: {fileID: 0}
-    render: {fileID: 928323099074921483, guid: a16b7224c60022f4dbce6ee79491a567, type: 3}
-    type: 1
-    isDestroyable: 0
-    isWalkable: 1
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 5002137142087362993, guid: 4491b13fa0e90ac48b43c7dd88422edc,
-      type: 3}
-    blockObject: {fileID: 0}
-    render: {fileID: 6838808879682525895, guid: 4491b13fa0e90ac48b43c7dd88422edc,
-      type: 3}
-    type: 2
-    isDestroyable: 0
-    isWalkable: 1
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 6220806491328333236, guid: 517ee3e933e356f48b09eff7022074b3,
-      type: 3}
-    blockObject: {fileID: 0}
-    render: {fileID: 5479161996761697802, guid: 517ee3e933e356f48b09eff7022074b3,
-      type: 3}
-    type: 3
-    isDestroyable: 0
-    isWalkable: 0
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 3263708124791008450, guid: 71cced7cf245d6c4ab97c5486adb44e7,
-      type: 3}
-    blockObject: {fileID: 0}
-    render: {fileID: 1312455117177872660, guid: 71cced7cf245d6c4ab97c5486adb44e7,
-      type: 3}
-    type: 4
-    isDestroyable: 0
-    isWalkable: 1
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
-  - size: {x: 1, y: 1, z: 1}
-    blockPrefab: {fileID: 8862484656118993221, guid: 8685856a45e3ca649b603f5ff8104456,
-      type: 3}
-    blockObject: {fileID: 0}
-    render: {fileID: 5933720581007216874, guid: 8685856a45e3ca649b603f5ff8104456,
-      type: 3}
-    type: 5
-    isDestroyable: 0
-    isWalkable: 1
-    isBuildable: 0
-    isHarvestable: 0
-    isHaveHarvest: 0
-    visibleFaces: 010101010101
+  - {fileID: 2486534121548655722, guid: 9f0adcaa9f9695848987c386973a7a22, type: 3}
+  - {fileID: 5002137142087362993, guid: 4491b13fa0e90ac48b43c7dd88422edc, type: 3}
+  - {fileID: 3263708124791008450, guid: 71cced7cf245d6c4ab97c5486adb44e7, type: 3}
+  - {fileID: 8862484656118993221, guid: 8685856a45e3ca649b603f5ff8104456, type: 3}
+  - {fileID: 6220806491328333236, guid: 517ee3e933e356f48b09eff7022074b3, type: 3}
+  - {fileID: 3773702871332299349, guid: a16b7224c60022f4dbce6ee79491a567, type: 3}
   player: {fileID: 1256581962}
   loadDistance: 4
   unloadDistance: 10
@@ -4019,8 +3983,8 @@ SceneRoots:
   - {fileID: 1651363917}
   - {fileID: 299667574}
   - {fileID: 775579812}
-  - {fileID: 462532327}
   - {fileID: 1471372106}
+  - {fileID: 462532327}
   - {fileID: 316206977}
   - {fileID: 510835170}
   - {fileID: 543137251}

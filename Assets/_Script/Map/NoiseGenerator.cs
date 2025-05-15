@@ -74,7 +74,7 @@ public class NoiseGenerator : MonoBehaviour
         double frequency = 1.0 / settings.scale;
         double amplitude = 1.0;
         double maxValue = 0.0;
-        Debug.Log("out");
+        // Debug.Log("out");
         for (int i = 0; i < noiseLevels.Length; i++)
         {
             if (noiseLevels[i] == null) continue;
@@ -85,7 +85,7 @@ public class NoiseGenerator : MonoBehaviour
             amplitude *= settings.persistance;
             frequency *= settings.lacunarity;
         }
-        Debug.Log("out");
+        // Debug.Log("out");
 
         // 归一化噪声值
         value /= maxValue;
@@ -126,7 +126,7 @@ public class NoiseGenerator : MonoBehaviour
     }
     //获取高度噪声
     public float GetHeightNoise(Vector3 position){
-        Debug.Log("in");
+        // Debug.Log("in");
         if (_heightNoiseLevels == null)
             InitializeNoiseLayers(_mapManager.GetNoiseSettings(NoiseType.Height_low), out _heightNoiseLevels);
         return GenerateNoiseValue(_heightNoiseLevels,_mapManager.GetNoiseSettings(NoiseType.Height_low),position);

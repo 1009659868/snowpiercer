@@ -157,22 +157,25 @@ public class Chunk : MonoBehaviour
         for(int i=0;i<8;i++){
             var temp=new Vector3(pos.x+dir[i,0],pos.y,pos.z+dir[i,1]);
             Block tempblock = _chunkLoader.GetBlock(temp);
+            if(tempblock==null) return;
             if(tempblock.isHaveHarvest) return;
         }
         pos+=new Vector3(0,2,0);
         // Debug.Log(resourceNoise);
         GameObject tree=_mapGenerator.treePrefab;
+        GameObject obj=null;
         switch(blockType){
             case BlockType.Dirt:
-                Instantiate(tree,pos,Quaternion.identity);
+                obj=Instantiate(tree,pos,Quaternion.identity);
                 break;
             case BlockType.Grass:
-                Instantiate(tree,pos,Quaternion.identity);
+                obj=Instantiate(tree,pos,Quaternion.identity);
                 break;
             default: 
                 return;
         }
         block.isHaveHarvest=true;
+        obj.transform.parent=_mapManager._resourceHolder;
     }
     int GenerateHeight(Vector3 wPos)
     {

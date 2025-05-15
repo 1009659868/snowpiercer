@@ -194,7 +194,7 @@ public class PlayerMovement : MonoBehaviour
     {
         isJumping = true;
         lastJumpTime = Time.time;
-        Debug.Log("jump");
+        // Debug.Log("jump");
         // 应用跳跃速度
         Vector3 currentVelocity= velocity;
         currentVelocity.y = 0;

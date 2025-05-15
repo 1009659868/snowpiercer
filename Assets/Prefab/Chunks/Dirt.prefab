@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7542077973327175743}
   - component: {fileID: 928323099074921483}
   - component: {fileID: 1373029598300309091}
+  - component: {fileID: -6747205554682910988}
   m_Layer: 7
   m_Name: Dirt
   m_TagString: ground
@@ -105,3 +106,26 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-6747205554682910988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773702871332299349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d443f704cff2cee438078f2e7e77e6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
+  size: {x: 0, y: 0, z: 0}
+  prefab: {fileID: 3773702871332299349}
+  blockObject: {fileID: 3773702871332299349}
+  type: 1
+  isDestroyable: 0
+  isWalkable: 0
+  isBuildable: 0
+  isHarvestable: 0
+  isHaveHarvest: 0
+  visibleFaces: 010101010101

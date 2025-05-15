@@ -79,9 +79,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4428560709fab214dba1cade7c854ef0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
   _name: Water Tank
   attachedRail: {fileID: 0}
-  progressOffset: 0
   destroyBeforeExplode:
   - {fileID: 0}
   particles:

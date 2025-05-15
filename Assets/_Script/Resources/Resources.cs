@@ -5,7 +5,6 @@ using UnityEngine;
 public abstract class Resource : MonoBehaviour, IGrid, IStackable, ISelectable
 {
     [SerializeField] private Transform stackAnchor;
-
 #region IGrid interface
     public GVector2Int gridPosition => MyGrid._instance.WorldToGroundGrid(transform.position);
     public Vector3 worldPosition => MyGrid._instance.GroundGridToWorld(gridPosition);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,9 @@ public class ChunkLoader : MonoBehaviour
     public Transform _boundaryHolder;
     public Transform _chunkHolder;
     [Header("Blocks")]
-    [SerializeField] private Block[] blocks;
+    [SerializeField] private GameObject[] blocks;
     private BlockPool blockPool;
-    private Dictionary<BlockType, Block> _prefabMap = new Dictionary<BlockType, Block>();
+    [SerializeField]private Dictionary<BlockType, GameObject> _prefabMap = new Dictionary<BlockType, GameObject>();
     private Dictionary<Vector3, Block> _activeBlocks = new Dictionary<Vector3, Block>();
     private Dictionary<Vector3, Chunk> _activeChunks = new Dictionary<Vector3, Chunk>();
     private Dictionary<Vector3, List<Vector3>> _chunkBlockMap = new Dictionary<Vector3, List<Vector3>>();
@@ -39,10 +40,12 @@ public class ChunkLoader : MonoBehaviour
         //预热对象池
         foreach (var block in blocks)
         {
+            var item= block.GetComponent<Block>();
             //预先生成400个备用
-            _prefabMap.Add(block.type, block);
-            if (block.HasVisual())
-                blockPool.Prewarm(block.type, block.blockPrefab, 100);
+            if(item.type==BlockType.Air) continue;
+            _prefabMap.Add(item.type, item.prefab);
+            if (item.HasVisual())
+                blockPool.Prewarm(item.type, item.prefab, 100);
         }
         // Debug.Log("prewarm over");
     }
@@ -250,7 +253,7 @@ public class ChunkLoader : MonoBehaviour
             }
             return;
         }
-        if (!_prefabMap.TryGetValue(type, out Block blockPrefab))
+        if (!_prefabMap.TryGetValue(type, out GameObject blockPrefab))
         {
             //Debug.LogError("No prefab found for block type: " + type);
             return;
@@ -263,21 +266,26 @@ public class ChunkLoader : MonoBehaviour
         {
             _chunkBlockMap[chunkPos].Add(worldPosition);
         }
-        Block prefab = _prefabMap[type];
+        GameObject prefab = _prefabMap[type];
 
-        var newBlock = new Block(worldPosition, prefab.size, prefab.blockPrefab, null, type, prefab.isDestroyable, prefab.isWalkable, prefab.isBuildable, prefab.isHarvestable);
-        
-        if (newBlock.HasVisual())
-        {
-            GameObject blockObject = LoadBlock(newBlock);
-            newBlock.blockObject = blockObject;
-            AdaptGrid(blockObject, gridType);
-            blockObject.transform.SetParent(newChunk.transform);
+
+        if(type!= BlockType.Air){
+            GameObject blockObj=LoadBlock(type, prefab, worldPosition);
+            Block newBlock = blockObj.GetComponent<Block>();
+            if(newBlock==null){
+            newBlock= blockObj.AddComponent<Block>();
+            }
+            newBlock.Initialize(
+                position: worldPosition,
+                type: type,
+                obj: blockObj
+            );
+            AdaptGrid(blockObj, gridType);
+            blockObj.transform.SetParent(newChunk.transform);
+            _activeBlocks.Add(worldPosition, newBlock);
+            // 更新相邻方块的面可见性
+            UpdateBlockAndNeighborsFaces(worldPosition);
         }
-
-        _activeBlocks.Add(worldPosition, newBlock);
-        // 更新相邻方块的面可见性
-        UpdateBlockAndNeighborsFaces(worldPosition);
     }
     //卸载地图块
     public void UnregisterBlock(Vector3 position)
@@ -342,11 +350,11 @@ public class ChunkLoader : MonoBehaviour
 
     }
     //加载地图块
-    private GameObject LoadBlock(Block block)
+    private GameObject LoadBlock(BlockType blockType, GameObject prefab,Vector3 pos)
     {
 
         // return Instantiate(block.blockPrefab,block.position,Quaternion.identity,transform);
-        return blockPool.Get(block.type, block.blockPrefab, block.position, Quaternion.identity, transform);
+        return blockPool.Get(blockType,prefab,pos, Quaternion.identity, transform);
     }
     
     //获取地图块
@@ -355,7 +363,7 @@ public class ChunkLoader : MonoBehaviour
         if (!_activeBlocks.TryGetValue(position, out Block block))
         {
             // Debug.LogError("No block found at position: " + position);
-            return new Block();
+            return null;
         }
         return block;
     }
@@ -453,7 +461,7 @@ public class ChunkLoader : MonoBehaviour
             //Debug.LogError("No block found at position: " + position);
             return null;
         }
-        return block.type == BlockType.Air ? null : block.blockPrefab;
+        return block.type == BlockType.Air ? null : block.prefab;
     }
     #endregion
     public int GetLoadRadius()

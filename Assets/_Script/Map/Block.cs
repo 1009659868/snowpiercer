@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Unity.VisualScripting;
 using UnityEngine;
 
 #region Block
 [System.Serializable]
-public class Block 
+public class Block :Node
 {
     public Vector3 position { get; set; }
     //地块大小,占地范围
     public Vector3 size;
-    public GameObject blockPrefab;
+    public GameObject prefab;
     public GameObject blockObject;
-    public Renderer render;
     public BlockType type;
     //是否允许破坏
     public bool isDestroyable;
@@ -23,39 +24,16 @@ public class Block
     public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true };
     // 记录每个面被哪些邻居遮挡（用于精确恢复）
     private Dictionary<int, List<Vector3>> _occlusionRecords = new Dictionary<int, List<Vector3>>();
-
-    
-    private Color hoverColor =Color.gray;
-    private Color initColor;
-    void Start()
-    {
-        initColor = render.material.color;
-    }
-    void OnMouseEnter()
-    {
-        render.material.color=hoverColor;
-    }
-    void OnMouseExit()
-    {
-        render.material.color = initColor;
-    }
-
-    public Block() { }
-    public Block(Vector3 position, Vector3 blockSize, GameObject blockPrefab, GameObject blockObject, BlockType type, bool isDestroyable, bool isWalkable, bool isBuildable, bool isHarvestable)
+    public void Initialize(Vector3 position,BlockType type,GameObject obj)
     {
         this.position = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));
-        this.size = blockSize;
-        this.blockPrefab = blockPrefab;
-        this.blockObject = blockObject;
+        this.size = Vector3.one;
+        this.blockObject = obj;
         this.type = type;
-        this.isDestroyable = isDestroyable;
-        this.isWalkable = isWalkable;
-        this.isBuildable = isBuildable;
-        this.isHarvestable = isHarvestable;
     }
     public bool HasVisual()
     {
-        return type != BlockType.Air && blockPrefab != null;
+        return type != BlockType.Air && blockObject != null;
     }
     public void UpdateFaceVisibility(Dictionary<Vector3, Block> allBlocks)
     {

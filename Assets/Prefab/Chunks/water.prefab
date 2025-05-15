@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8866549275353247965}
   - component: {fileID: 4016698692049334539}
   - component: {fileID: 5479161996761697802}
+  - component: {fileID: -4883028617451413191}
   m_Layer: 0
   m_Name: water
   m_TagString: Untagged
@@ -83,3 +84,26 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-4883028617451413191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6220806491328333236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d443f704cff2cee438078f2e7e77e6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
+  size: {x: 0, y: 0, z: 0}
+  prefab: {fileID: 6220806491328333236}
+  blockObject: {fileID: 6220806491328333236}
+  type: 3
+  isDestroyable: 0
+  isWalkable: 0
+  isBuildable: 0
+  isHarvestable: 0
+  isHaveHarvest: 0
+  visibleFaces: 010101010101
