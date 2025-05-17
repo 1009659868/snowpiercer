@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
-public class Rail : StackableBase
+public class Rail : StackableBase 
 {
     public const float overlapBoxHeight = 50f;
 
@@ -22,6 +23,13 @@ public class Rail : StackableBase
     public override ILinkable lowerNeighbor => GetNeighbor(transform.position + (Vector3.back * MyGrid._instance.cellSize));
     public override ILinkable rightNeighbor => GetNeighbor(transform.position + (Vector3.right * MyGrid._instance.cellSize));
     public override ILinkable leftNeighbor => GetNeighbor(transform.position + (Vector3.left * MyGrid._instance.cellSize));
+
+    void Start()
+    {
+        // var surface = gameObject.AddComponent<NavMeshSurface>();
+        // DynamicNavMeshBaker._instance.ConfigureNavMeshSurface(surface);
+        // DynamicNavMeshBaker._instance.RequestBake(surface);
+    }
     public override void Reset()
     {
         base.Reset();

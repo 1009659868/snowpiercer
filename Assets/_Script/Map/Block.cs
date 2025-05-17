@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 #region Block
 [System.Serializable]
@@ -10,7 +11,7 @@ public class Block :Node
 {
     public Vector3 position { get; set; }
     //地块大小,占地范围
-    public Vector3 size;
+    public Vector3 size= new Vector3(4,4,4);
     public GameObject prefab;
     public GameObject blockObject;
     public BlockType type;
@@ -24,6 +25,27 @@ public class Block :Node
     public bool[] visibleFaces = new bool[6] { true, true, true, true, true, true };
     // 记录每个面被哪些邻居遮挡（用于精确恢复）
     private Dictionary<int, List<Vector3>> _occlusionRecords = new Dictionary<int, List<Vector3>>();
+
+
+    protected override void OnMouseEnter()
+    {
+        base.OnMouseEnter();
+    }
+    protected override void OnMouseExit()
+    {
+        base.OnMouseExit();
+    }
+    private void OnMouseDown()
+    {
+        Debug.Log("创建并放置炮塔");
+        if(EventSystem.current.IsPointerOverGameObject()) return;
+        if(BuildManager._instance.Selected==null) return;
+        
+        GameObject building = Instantiate(BuildManager._instance.Selected,transform.position+offset/2,Quaternion.identity);
+        building.transform.localScale*=2;
+    }
+
+
     public void Initialize(Vector3 position,BlockType type,GameObject obj)
     {
         this.position = MyGrid._instance.DetailGridToWorld(MyGrid._instance.WorldToDetailGrid(position));

@@ -72,6 +72,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\_Script\Train\DockTrain.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
+    <Compile Include="Assets\_Script\Time\Time Manager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\_Script\Train\TrainMovement.cs" />
     <Compile Include="Assets\_Script\Test\NoiseChecker.cs" />
+    <Compile Include="Assets\_Script\Enemy\Monster Manager.cs" />
     <Compile Include="Assets\_Script\EventManager.cs" />
     <Compile Include="Assets\_Script\Map\NoiseGenerator.cs" />
     <Compile Include="Assets\_Script\Player\GroundChecker.cs" />
@@ -92,14 +94,18 @@
     <Compile Include="Assets\_Script\Map\MapGenerator.cs" />
     <Compile Include="Assets\_Script\Game\GameManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01_UGUI.cs" />
+    <Compile Include="Assets\_Script\Interact\Craft.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SimpleScript.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark04.cs" />
+    <Compile Include="Assets\_Script\Enemy\Slime.cs" />
     <Compile Include="Assets\_Script\Interfaces\IGrid.cs" />
     <Compile Include="Assets\_Script\Map\Block.cs" />
+    <Compile Include="Assets\_Script\Enemy\TurtleAI.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ChatController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\_Script\Tools\ToolBase.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
+    <Compile Include="Assets\_Script\Enemy\Turtle.cs" />
     <Compile Include="Assets\_Script\Resources\Wood.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\_Script\Player\MovementChecker.cs" />
@@ -115,8 +121,10 @@
     <Compile Include="Assets\_Script\Player\PlayerKeyBinding.cs" />
     <Compile Include="Assets\_Script\Noise.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
+    <Compile Include="Assets\_Script\Tools\DynamicNavMeshBaker.cs" />
     <Compile Include="Assets\_Script\Interfaces\ISelectable.cs" />
     <Compile Include="Assets\_Script\Railway.cs" />
+    <Compile Include="Assets\_Script\Enemy\Monster.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\_Script\Interact\Node.cs" />
     <Compile Include="Assets\_Script\Interfaces\IHarvestable.cs" />
@@ -125,12 +133,15 @@
     <Compile Include="Assets\_Script\Resources\Resources.cs" />
     <Compile Include="Assets\_Script\Helper.cs" />
     <Compile Include="Assets\_Script\Tools\MyRender.cs" />
+    <Compile Include="Assets\_Script\Recipe\Recipe.cs" />
     <Compile Include="Assets\_Script\Player\PlayerAnimator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\_Script\Map\Chunk.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
+    <Compile Include="Assets\_Script\Enemy\SlimeAI.cs" />
+    <Compile Include="Assets\_Script\Enemy\MonsterAI.cs" />
     <Compile Include="Assets\_Script\Player\MouseFocusChecker.cs" />
     <Compile Include="Assets\_Script\Map\ChunkUnloadDetector.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
@@ -153,9 +164,11 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\_Script\Harvestables\MyTree.cs" />
     <Compile Include="Assets\_Script\Player\PlayerDamage.cs" />
+    <Compile Include="Assets\_Script\Interact\BuildManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\_Script\Audio\ButtonAudio.cs" />
     <Compile Include="Assets\_Script\Menu\Menu.cs" />
+    <Compile Include="Assets\_Script\Tools\MonsterPool.cs" />
     <Compile Include="Assets\_Script\Map\NoiseSettings.cs" />
     <Compile Include="Assets\_Script\Map\ImprovedNoise.cs" />
     <Compile Include="Assets\_Script\Player\Selector.cs" />
@@ -1037,6 +1050,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Runtime.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.AI.Navigation">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.Burst.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.Burst.Editor.dll</HintPath>
       <Private>False</Private>
@@ -1125,16 +1142,20 @@
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.ShaderLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Unity.TestTools.CodeCoverage.Editor">
-      <HintPath>Library\ScriptAssemblies\Unity.TestTools.CodeCoverage.Editor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Unity.TestTools.CodeCoverage.Editor.OpenCover.Model">
       <HintPath>Library\ScriptAssemblies\Unity.TestTools.CodeCoverage.Editor.OpenCover.Model.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.PlasticSCM.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.PlasticSCM.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation.Updater">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.Updater.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.TestTools.CodeCoverage.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.TestTools.CodeCoverage.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.State.Editor">
@@ -1165,8 +1186,16 @@
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Universal.Shaders.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Unity.AI.Navigation.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.VisualScripting.State">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.State.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.AI.Navigation.Editor.ConversionSystem">
+      <HintPath>Library\ScriptAssemblies\Unity.AI.Navigation.Editor.ConversionSystem.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">

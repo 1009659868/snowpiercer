@@ -9816,6 +9816,7 @@ Transform:
   m_Children:
   - {fileID: 2762669439152536858}
   - {fileID: 2839090309107927268}
+  - {fileID: 557510886111356217}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-2347439262515230432
@@ -9831,19 +9832,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
+  isInteracting: 0
   _name: Rail Crafter
   attachedRail: {fileID: 0}
   destroyBeforeExplode: []
   particles:
   - {fileID: 5197680095380734121}
   - {fileID: 9135568633253331075}
-  woodRequired: 3
-  craftTime: 5
-  throwForce: 8
-  spawnCheckRadius: 1
+  availableRecipes:
+  - recipeName: "\u8F68\u9053"
+    resultPrefab: {fileID: 6381513413550935446, guid: 93effebf335674ee8b25184193090a65,
+      type: 3}
+    requirements:
+    - type: 1
+      amount: 2
   spawnPoint: {fileID: 0}
-  railPrefab: {fileID: 0}
   craftingEffect: {fileID: 0}
+  craftingUI: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!65 &2911166057733612282
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14753,6 +14761,37 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!1 &4780934660534960616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 557510886111356217}
+  m_Layer: 0
+  m_Name: Spwan Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &557510886111356217
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4780934660534960616}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.20714429, y: 2.636868, z: 0.050438643}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7302478542155312108}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7461395701493645269
 GameObject:
   m_ObjectHideFlags: 0

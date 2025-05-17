@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using SimplexNoise;
+using Unity.AI.Navigation;
+using UnityEngine.AI;
 #region Chunk
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
@@ -47,12 +49,16 @@ public class Chunk : MonoBehaviour
         }
         return null;
     }
+    
     void Start()
     {
         _chunkLoader.RegisterChunk(this);
         rand=new System.Random(100);
         //初始化地图
         InitMap();
+        // var surface = gameObject.AddComponent<NavMeshSurface>();
+        // DynamicNavMeshBaker._instance.ConfigureNavMeshSurface(surface);
+        // DynamicNavMeshBaker._instance.RequestBake(surface);
     }
     void InitMap()
     {   
@@ -348,15 +354,6 @@ public class Chunk : MonoBehaviour
             tris.Add(index + 0);
         }
     }
-
-
-
-
-
-
-
-
-
     public Chunk(Vector3 size, Vector3 position)
     {
         this.size = size;

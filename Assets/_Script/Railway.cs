@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class Railway : MonoBehaviour
@@ -37,6 +38,7 @@ public class Railway : MonoBehaviour
             // 根据预制体生成新的 Rail 对象，放置到 railParent 下
             var newRail = Instantiate(prefab, MyGrid._instance.GroundGridToWorld(MyGrid._instance.WorldToGroundGrid(rail.position)), Quaternion.identity, railParent);
             SetupRailConnection(spawnedRails, newRail);
+            
             AddRail(newRail);
         }
     }

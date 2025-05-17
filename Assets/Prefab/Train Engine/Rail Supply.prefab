@@ -170,7 +170,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1485735926208598997
 Transform:
   m_ObjectHideFlags: 0
@@ -426,6 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
+  isInteracting: 0
   _name: Rail Supply
   attachedRail: {fileID: 0}
   destroyBeforeExplode: []
@@ -468,11 +469,6 @@ MonoBehaviour:
   - {fileID: 4463674431917260905}
   - {fileID: 4812437393389566889}
   - {fileID: 6540618173977071249}
-  previews:
-    rail: {fileID: 7228566863525213907, guid: b7d5f4d64bd8e4d0c9131ac1cf0d9ba8, type: 3}
-    wood: {fileID: 3538154242591433938, guid: 0ba6314fdc46a4f89807b75d241af486, type: 3}
-    rock: {fileID: 4852057527345586910, guid: 55d35cee67ff7db4084365ac08a0fb44, type: 3}
-  selectedMaterial: {fileID: 2100000, guid: d3544602f4fe5484ab7ba1dbac16aa91, type: 2}
   woodPrefab: {fileID: 6573431426561489024, guid: c6f263731aef14fb9b547f185602d9d0,
     type: 3}
   rockPrefab: {fileID: 6573431426561489024, guid: 200e8cdcadb9f47a4b954b6a6b753ba2,

@@ -5,70 +5,80 @@ using UnityEngine;
 public class RailCrafter : Car
 {
     [Header("Crafting Settings")]
-    public int woodRequired = 3;         // 制作所需木材
-    public float craftTime = 5f;         // 制作耗时
-    public float throwForce = 8f;        // 轨道抛出力度
-    public float spawnCheckRadius = 1f;  // 生成检测半径
-    
-    [Header("References")]
+    public List<Recipe> availableRecipes = new List<Recipe>();
     public Transform spawnPoint;         // 轨道生成点
-    public GameObject railPrefab;       // 轨道预制体
     public ParticleSystem craftingEffect; // 制作特效
+    [Header("References")]
+    
+    public LayerMask playerLayer;
+    private PlayerStack player;
 
-    private int currentWood;
+    private bool isUIOpen;
     private bool isCrafting;
 
-
-    void TryStartCrafting()
+    public bool CanCraft(Recipe recipe)
     {
-        if (isCrafting || !CanAcceptWood()) return;
-        
-        StartCoroutine(CraftProcess());
-    }
-
-    IEnumerator CraftProcess()
-    {
-        // 收取木材
-        // 收集方式???
-        // 吸附还是放置???
-        int woodToTake = Mathf.Min(0, woodRequired - currentWood);
-        
-        currentWood += woodToTake;
-
-        // 开始制作
-        isCrafting = true;
-        craftingEffect.Play();
-        
-        float timer = 0;
-        while (timer < craftTime && !isExploded)
+        foreach(var req in recipe.requirements)
         {
-            timer += Time.deltaTime;
-            yield return null;
+            if(GetAvailableAmount(req.type) < req.amount)
+                return false;
+        }
+        return true;
+    }
+    public void TryCraft(Recipe recipe)
+    {
+        if(!CanCraft(recipe)) return;
+
+        // 扣除材料
+        foreach(var req in recipe.requirements)
+        {
+            ConsumeMaterials(req.type, req.amount);
         }
 
-        // 生成轨道
-        if (!isExploded) SpawnRail();
+        // 生成物品
+        Instantiate(recipe.resultPrefab, GetSpawnPosition(), Quaternion.identity);
+    }
+    int GetAvailableAmount(StackableType type)
+    {
+        int total = 0;
         
-        craftingEffect.Stop();
-        currentWood = 0;
-        isCrafting = false;
-    }
-
-    void SpawnRail()
-    {
+        // 玩家携带的材料
+        total += player.GetItemCount(type);
         
+        // 所有存储车厢中的材料
+        foreach(var car in TrainManager._instance.GetAllCars<RailSupply>())
+        {
+            total += car.GetStoredCount(type);
+        }
+        
+        return total;
     }
-
-    Vector3 FindValidSpawnPosition(Vector3 baseDirection)
+    void ConsumeMaterials(StackableType type, int amount)
     {
-        return Vector3.zero;
-    }
+        // 先扣除玩家携带的
+        int fromPlayer = Mathf.Min(amount, player.GetItemCount(type));
+        player.ConsumeItems(type, fromPlayer);
+        amount -= fromPlayer;
 
-    bool CanAcceptWood()
+        // 再从存储车厢扣除
+        if(amount > 0)
+        {
+            foreach(var car in TrainManager._instance.GetAllCars<RailSupply>())
+            {
+                int fromCar = Mathf.Min(amount, car.GetStoredCount(type));
+                car.ConsumeItems(type, fromCar);
+                amount -= fromCar;
+                if(amount <= 0) break;
+            }
+        }
+    }
+    Vector3 GetSpawnPosition()
     {
-        return false;
+        Vector3 spawnPos = transform.position + transform.forward * 3f;
+        if(Physics.CheckSphere(spawnPos, 1f))
+            spawnPos += transform.up * 2f;
+        return spawnPos;
     }
-
     public override void Explode()
     {
         base.Explode(); // 调用父类爆炸逻辑

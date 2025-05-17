@@ -26,6 +26,18 @@ public class TrainManager : MonoBehaviour
             CarList.Add(carobj.GetComponent<Car>());
         }
     }
+    public List<T> GetAllCars<T>() where T : Car
+    {
+        List<T> result = new List<T>();
+        foreach (Car car in CarList)
+        {
+            if (car is T specificCar)
+            {
+                result.Add(specificCar);
+            }
+        }
+        return result;
+    }
     public GameObject GetCar(string name){
         return _activedCar[name];
     }

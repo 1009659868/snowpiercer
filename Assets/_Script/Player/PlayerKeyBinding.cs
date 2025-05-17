@@ -12,6 +12,8 @@ public class PlayerKeyBinding : MonoBehaviour
     public KeyCode[] dashKeys;
     public KeyCode[] dropOrGrabKeys;
     public KeyCode[] throwKeys;
+    public KeyCode[] storeKeys;
+    public KeyCode[] retrieveKeys;
 
 
     public static bool isPressed(IEnumerable<KeyCode> keys)

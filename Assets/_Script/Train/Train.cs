@@ -38,17 +38,6 @@ public class Train : MonoBehaviour
         EventManager.TrainStarted();
     }
     private void CarPosInit(){
-        // 确保轨道数量足够
-        // 初始化车厢轨道分配（第一个车厢在第一个轨道，后续车厢依次分配）
-        // List<Car> cars=TrainManager._instance.GetCars();
-        // for (int i = 0; i < cars.Count(); i++)
-        // {   
-        //     int targetRailIndex = cars.Count()-i-1;
-        //     Rail targetRail = Railway.Instance.rails[targetRailIndex];
-        //     // targetRailIndex = Mathf.Clamp(targetRailIndex, 0, Railway.Instance.rails.Count );
-        //     cars[i].AttachToRail(targetRail);
-        //     // cars[i].AttachToRail(Railway.Instance.rails[cars.Count-i-1]);
-        // }
         // 获取所有车厢
         List<Car> cars = TrainManager._instance.GetCars();
         if (cars.Count == 0) return;

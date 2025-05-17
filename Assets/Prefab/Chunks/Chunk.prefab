@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bed59f9cef969243b4dee825666d831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 0, y: 0, z: 0}
+  size: {x: 4, y: 4, z: 4}
   mesh: {fileID: 0}
   ChunkObject: {fileID: 6415299639122187989}
   position: {x: 0, y: 0, z: 0}

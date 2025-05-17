@@ -37,7 +37,7 @@ public class MapGenerator : MonoBehaviour
     private float updateTimer = 0f;
     private const float UPDATE_INTERVAL = 1f; // 1秒间隔
     public bool initedMap;
-
+    public Vector3 firstChunk;
     private void Awake()
     {
         _instance = this;
@@ -99,7 +99,7 @@ public class MapGenerator : MonoBehaviour
     //卸载加载范围外的区块
     public IEnumerator UnInstallChunksOutsideLoadArea()
     {
-        Debug.Log("---UnloadChunks---");
+        // Debug.Log("---UnloadChunks---");
         List<Vector3> chunksToUnInstall = new List<Vector3>();
         Dictionary<Vector3, Chunk> activeChunks = _chunkLoader.GetActiveChunks();
         // 使用缓存列表避免修改集合时迭代

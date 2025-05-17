@@ -7,6 +7,7 @@ TagManager:
   - ground
   - Boundary
   - Enemy
+  - UI_Models
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - EnemyProjectiles
   - FlyingEnemies
   - GroundEnemyTargettingProjectiles
-  - 
+  - UI_Models
   - 
   - 
   - 
@@ -43,4 +44,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 2061331181
     locked: 0

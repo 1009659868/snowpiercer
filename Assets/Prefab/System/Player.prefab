@@ -291,6 +291,8 @@ MonoBehaviour:
   dashKeys: 300100002f010000
   dropOrGrabKeys: 43010000
   throwKeys: 44010000
+  storeKeys: 43010000
+  retrieveKeys: 44010000
 --- !u!1 &2470315156161853359
 GameObject:
   m_ObjectHideFlags: 0
@@ -461,6 +463,7 @@ MonoBehaviour:
   binding: {fileID: 2699580730369814380}
   selector: {fileID: 8958795104396470759}
   stackOrigin: {fileID: 5074246333344689005}
+  isInteracting: 0
   interactRange: 5
   gravity: -9.81
   trajectoryRenderer: {fileID: 4454960227635204746, guid: 23edbc912c720df489fc45826e799d49,

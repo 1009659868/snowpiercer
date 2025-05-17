@@ -6,6 +6,8 @@ using UnityEngine;
 public abstract class Node:MonoBehaviour {
     [SerializeField]private Material hoverMaterial;
     public bool isEnter{ get; set; }
+    public bool isInteracting =false;
+    [SerializeField] public Vector3 offset = new Vector3(0, 4f, 0);
     private Material initMaterial;
     private List<Renderer> _childRenderers=new List<Renderer>();
     private List<Material> _originalMaterials=new List<Material>();
@@ -23,12 +25,6 @@ public abstract class Node:MonoBehaviour {
     }
     protected virtual void OnMouseExit(){
         hoverExit();
-    }
-    protected virtual void OuseUp()
-    {
-        if(isEnter){
-            Debug.Log("执行相关逻辑");
-        }
     }
     public virtual void hoverEnter(){
         isEnter=true;

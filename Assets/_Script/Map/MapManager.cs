@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class MapManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class MapManager : MonoBehaviour
     public static MapManager _instance;
     public GameObject gridCube;
     public Transform mapHolder;
+    public Transform _environment;
     public Transform _resourceHolder;
     public const int cellSize = 4;
     [Header("Map Settings")]
@@ -23,8 +25,10 @@ public class MapManager : MonoBehaviour
     private Vector3 _lastMapSize;
     private Vector3 _lastGroundSize;
     private int _lastCellSize;
+    public bool isBaked;
     void Awake() {
        _instance = this;
+       isBaked=false;
     }
     void Start()
     {
@@ -35,8 +39,30 @@ public class MapManager : MonoBehaviour
             // NoiseGenerator._instance.GenerateNoise(noise.type, noise.settings);
         }
         // Debug.Log("OK");
+
     }
-    
+    void Update()
+    {
+        StartCoroutine(bake());
+    }
+    IEnumerator bake(){
+        var currentSize= ChunkLoader._instance.GetActiveChunks().Count;
+        if(currentSize!=0&&currentSize%16==0){
+            // Debug.Log("currentSize baking in");
+            if(_environment.gameObject.TryGetComponent<NavMeshSurface>(out NavMeshSurface surface)){
+                if(surface!=null){
+                    Destroy(surface);
+                    surface=null;
+                }
+            }
+            
+            surface = _environment.gameObject.AddComponent<NavMeshSurface>();
+            DynamicNavMeshBaker._instance.ConfigureNavMeshSurface(surface);
+            DynamicNavMeshBaker._instance.RequestBake(surface);
+            if(!isBaked) isBaked=!isBaked;
+        }
+        yield return new WaitForSeconds(1f);
+    }
     public NoiseSettings GetNoiseSettings(NoiseType noiseType)
     {
         if (!_noiseSettings.TryGetValue(noiseType, out NoiseSettings noiseSettings))

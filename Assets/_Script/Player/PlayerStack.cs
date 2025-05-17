@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,13 +8,16 @@ public class PlayerStack : MonoBehaviour
 {
     public const int MAX_STACK_SIZE = 4;
     [SerializeField] private MouseFocusChecker mouseFocusChecker;
-    [SerializeField] private PlayerKeyBinding binding;
+    [SerializeField] public PlayerKeyBinding binding;
     [SerializeField] private Selector selector;
-    [SerializeField] private Transform stackOrigin;
+    [SerializeField] public Transform stackOrigin;
     
-    private Stack<IStackable> stack = new Stack<IStackable>();
+    public Stack<IStackable> stack = new Stack<IStackable>();
     private StackEvent stackEvent = StackEvent.NONE;
+    public bool isInteracting =false;
 
+    [SerializeField]public bool isStore => PlayerKeyBinding.isDown(binding.storeKeys);
+    [SerializeField]public bool isRetrieve => PlayerKeyBinding.isDown(binding.retrieveKeys);
     [SerializeField]public bool isDropOrGrab => PlayerKeyBinding.isUp(binding.dropOrGrabKeys);
     [SerializeField]public bool isHighThrowDown => PlayerKeyBinding.isDown(binding.throwKeys);
     [SerializeField]public bool isHighThrowHold => PlayerKeyBinding.isPressed(binding.throwKeys);
@@ -47,7 +51,7 @@ public class PlayerStack : MonoBehaviour
         HandleGrab();
         HandleDrop();
         CarryStackables();
-        HandleHighThrow();
+        // HandleHighThrow();
     }
     // 从玩家手中取出顶部物品
     public IStackable Pop(){
@@ -75,7 +79,85 @@ public class PlayerStack : MonoBehaviour
         }
         stack.Push(item);
     }
-
+    public int GetItemCount(StackableType type)
+    {
+        int count = 0;
+        foreach (var item in stack)
+        {
+            if (item.type == type)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+    public void ConsumeItems(StackableType type, int amount)
+    {
+        var tempList = new List<IStackable>();
+        int consumed = 0;
+    
+        // 1. 先取出整个堆栈进行处理
+        while (stack.Count > 0)
+        {
+            tempList.Add(stack.Pop());
+        }
+    
+        // 2. 逆向遍历（原堆栈顺序）
+        for (int i = tempList.Count - 1; i >= 0; i--)
+        {
+            var current = tempList[i];
+            
+            if (consumed < amount && current.type == type)
+            {
+                // 销毁前处理连接关系
+                if (current.upper != null)
+                {
+                    current.upper.lower = current.lower;
+                }
+                if (current.lower != null)
+                {
+                    current.lower.upper = current.upper;
+                }
+    
+                Destroy(((MonoBehaviour)current).gameObject);
+                consumed++;
+            }
+            else
+            {
+                // 保留物品重新入栈
+                stack.Push(current);
+                
+                // 重置连接关系（因为取出时已经断开）
+                if (stack.Count > 1)
+                {
+                    var previous = tempList[i + 1]; // 注意此时栈已部分重建
+                    current.lower = previous;
+                    previous.upper = current;
+                }
+                else
+                {
+                    current.lower = null;
+                }
+                current.upper = null;
+            }
+        }
+    
+        // 3. 重建最终堆栈关系
+        if (stack.Count > 0)
+        {
+            IStackable last = null;
+            foreach (var item in stack.Reverse()) // 需要反转遍历顺序
+            {
+                if (last != null)
+                {
+                    item.upper = last;
+                    last.lower = item;
+                }
+                last = item;
+            }
+            stack.Peek().upper = null; // 确保顶部物品没有上层
+        }
+    }
     private void HandleGrab()
     {
         if (stackEvent != StackEvent.NONE) return;
@@ -149,14 +231,6 @@ public class PlayerStack : MonoBehaviour
                 }
             }
         }
-        // else if(focus.TryGetComponent(out IInteractable interactable)){
-        //     //从可交互物体中获取物体
-        //     //待完善
-        //     if(interactable.CanInteract(this)){
-        //         stackEvent = StackEvent.GRAB;
-        //         interactable.Interact(this);
-        //     }
-        // }
     }
 
     private void HandleDrop()
@@ -164,6 +238,8 @@ public class PlayerStack : MonoBehaviour
         if (stackEvent != StackEvent.NONE) return;
 
         if (!isDropOrGrab) return;
+
+        if(isInteracting) return;
 
         if (focus != null)
         {
