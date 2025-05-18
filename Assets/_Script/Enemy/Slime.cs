@@ -9,13 +9,10 @@ public class Slime : Monster
     [SerializeField] private float splashDamage = 20f;
     [SerializeField] private GameObject miniSlimePrefab;
     [SerializeField] private int splitCount = 2;
-
-    private Rigidbody rb;
     private bool isJumping;
     protected override void Awake()
     {
         base.Awake();
-        rb = GetComponent<Rigidbody>();
         type = MonsterType.Slime;
     }
     public override void PerformAttack()
@@ -30,7 +27,7 @@ public class Slime : Monster
     // 分裂技能
     public override void SpecialAbility()
     {
-       if(currentHp <= maxHp * 0.3f)
+       if(currentHealth <= maxHP * 0.3f)
         {
             SplitIntoMiniSlimes();
         }
@@ -41,7 +38,7 @@ public class Slime : Monster
         {
             
             Vector3 spawnPos = transform.position + Random.insideUnitSphere * 2f;
-            Monster miniSlime = MonsterPool.Instance.Get(MonsterType.Slime, spawnPos).GetComponent<Monster>();
+            Monster miniSlime = MonsterPool._instance.Get(MonsterType.Slime, spawnPos).GetComponent<Monster>();
             miniSlime.Initialize();
             miniSlime.transform.localScale *= 0.6f;
         }
@@ -60,9 +57,9 @@ public class Slime : Monster
         animator.SetTrigger(SlimeAnimParams.DieTrigger);
     }
 
-    public override void TakeDamage(float damage)
+    public override void TakeDamage(float damage,Vector3 hitDirection)
     {
-        base.TakeDamage(damage);
+        base.TakeDamage(damage,hitDirection);
         animator.SetTrigger(SlimeAnimParams.HitTrigger);
     }
 

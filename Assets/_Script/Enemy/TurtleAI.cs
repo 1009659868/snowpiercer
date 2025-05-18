@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TurtleAI : MonsterAI
 {
-    protected override void UpdateAIState()
+    public override void UpdateAIState()
     {
         throw new System.NotImplementedException();
     }

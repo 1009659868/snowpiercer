@@ -62,7 +62,7 @@ public abstract class Bullet : MonoBehaviour, IBullet
         if (Time.time - activateTime > lifeTime)
         {
             Deactivate();
-            BulletPool.Instance.ReturnToPool(this);
+            BulletPool._instance.ReturnToPool(this);
         }
 
     }
@@ -71,21 +71,22 @@ public abstract class Bullet : MonoBehaviour, IBullet
     protected virtual void OnTriggerEnter(Collider other)
     {
         if (!isActive) return;
-
+        
         if (other.CompareTag("Enemy"))
         {
-            BulletPool.Instance.ReturnToPool(this);
-            //ApplyDamage(other.GetComponent<IDamageable>());
-            // Debug.Log("fuc");
+            IDamageable damageable = other.GetComponent<IDamageable>();
+            if(damageable!=null){
+                Vector3 hitDirection = (other.transform.position - transform.position).normalized;
+                damageable.TakeDamage(damage, hitDirection);
+            }else{
+                Debug.LogWarning($"命中敌人但未找到IDamageable组件: {other.name}");
+            }
+            
+            BulletPool._instance.ReturnToPool(this);
             
         }
     }
 
-    // 伤害处理
-    protected virtual void ApplyDamage(IDamageable target)
-    {
-        target?.TakeDamage(damage);
-    }
 
     public BulletType GetBulletType() => bulletType;
     public void SetBulletType(BulletType type){
@@ -114,5 +115,5 @@ public interface IBullet
 
 public interface IDamageable
 {
-    void TakeDamage(float damage);
+    void TakeDamage(float damage, Vector3 hitDirection);
 }

@@ -420,6 +420,8 @@
 "Assets/_Script/Game/GameManager.cs"
 "Assets/_Script/Harvestables/Harvestable.cs"
 "Assets/_Script/Harvestables/MyTree.cs"
+"Assets/_Script/Health/DamagePopup.cs"
+"Assets/_Script/Health/HealthManager.cs"
 "Assets/_Script/Helper.cs"
 "Assets/_Script/Interact/BuildManager.cs"
 "Assets/_Script/Interact/Craft.cs"

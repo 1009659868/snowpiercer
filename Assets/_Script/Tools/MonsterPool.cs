@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class MonsterPool :Singleton<MonsterPool>
+public class MonsterPool : MonoBehaviour 
 {
     public static MonsterPool _instance;
 
@@ -19,9 +19,8 @@ public class MonsterPool :Singleton<MonsterPool>
     private Dictionary<MonsterType,Queue<GameObject>> pools;
     private Dictionary<MonsterType,GameObject> prefabMap;
 
-    protected override void Awake()
+    void Awake()
     {
-        base.Awake();
         _instance = this;
         StartCoroutine(DelayedInitialize());
     }
@@ -85,24 +84,39 @@ public class MonsterPool :Singleton<MonsterPool>
         return newObj;
     }
     private void PrepareObj(GameObject obj,Vector3 position){
+        var agent = obj.GetComponent<NavMeshAgent>();
         obj.transform.position = position;
         obj.SetActive(true);
+        if(agent != null)
+        {
+            agent.enabled = true;
+            agent.Warp(position);
+            agent.isStopped = false;
+        }
+        
 
         //初始化怪物状态
         Monster monster= obj.GetComponent<Monster>();
         monster?.Initialize();
     }
     private void ResetObj(GameObject obj){
-        obj.transform.SetParent(this.transform);
-        obj.SetActive(false);
-
         // 重置怪物状态
         Monster monster = obj.GetComponent<Monster>();
-        monster?.ResetState();
+        if(monster != null)
+        {
+            monster.ResetState();
+            monster.transform.SetParent(transform);
+        }
+        // 确保物理组件状态
+        var rb = obj.GetComponent<Rigidbody>();
+        if(rb != null)
+        {
+            rb.isKinematic = true;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
         
-        // 重置位置和旋转
-        obj.transform.localPosition = Vector3.zero;
-        obj.transform.localRotation = Quaternion.identity;
+        obj.SetActive(false);
     }
     private void ExpandPool(MonsterType type, int expandAmount){
         for(int i=0;i<expandAmount;i++){

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BulletPool : MonoBehaviour
 {
-    public static BulletPool Instance;
+    public static BulletPool _instance;
 
     [System.Serializable]
     public class PoolConfig
@@ -21,7 +21,7 @@ public class BulletPool : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        _instance = this;
         InitializePools();
     }
     void Update() 

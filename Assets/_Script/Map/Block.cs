@@ -35,14 +35,15 @@ public class Block :Node
     {
         base.OnMouseExit();
     }
-    private void OnMouseDown()
+    protected override void OnMouseDown()
     {
-        Debug.Log("创建并放置炮塔");
+        // Debug.Log("创建并放置炮塔");
         if(EventSystem.current.IsPointerOverGameObject()) return;
-        if(BuildManager._instance.Selected==null) return;
+        if(BuildManager._instance.Selected==null || BuildManager._instance.type!=RecipeType.MachineGun) return;
         
         GameObject building = Instantiate(BuildManager._instance.Selected,transform.position+offset/2,Quaternion.identity);
         building.transform.localScale*=2;
+        base.OnMouseDown();
     }
 
 

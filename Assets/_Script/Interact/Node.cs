@@ -12,12 +12,18 @@ public abstract class Node:MonoBehaviour {
     private List<Renderer> _childRenderers=new List<Renderer>();
     private List<Material> _originalMaterials=new List<Material>();
     protected virtual void Start () {
-        // Debug.Log("获取Renderer");
+        
         Renderer[] renderers= GetComponentsInChildren<Renderer>(true);
         foreach(Renderer renderer in renderers) {
             _childRenderers.Add(renderer);
             _originalMaterials.Add(renderer.material);
         }
+    }
+    protected virtual void OnMouseDown(){
+        if(BuildManager._instance.Selected!=null){
+            BuildManager._instance.Selected=null;
+        }
+
     }
     protected virtual void OnMouseEnter()
     {

@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   partRotate: {fileID: 710496714606082274}
-  range: 20
+  range: 30
   enemyTag: Enemy
-  rotSpeed: 10
+  rotSpeed: 3
   bulletPrefab: {fileID: 2191760109134880275, guid: 5da4cd3a5de35704b8a3c8c7afef68ec,
     type: 3}
   bulletPoint: {fileID: 7873626856382420465}
@@ -57,10 +57,10 @@ MonoBehaviour:
   bulletType: 0
   bulletSpeed: 20
   bulletDamage: 1
-  burstCount: 10
-  burstFireRate: 0.5
+  burstCount: 15
+  burstFireRate: 0.08
   cooldownBetweenBursts: 1.5
-  spreadAngle: 45
+  spreadAngle: 30
 --- !u!1 &6624696975383141924
 GameObject:
   m_ObjectHideFlags: 0

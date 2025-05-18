@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 public class SlimeAI : MonsterAI
 {
     [Header("Slime AI Settings")]
@@ -20,24 +21,19 @@ public class SlimeAI : MonsterAI
         base.Awake();
         slime = GetComponent<Slime>();
     }
-    protected override void UpdateAIState()
+    public override void UpdateAIState()
     {
-        if(monster.IsDead) return;
-        // 计算移动方向
-        Vector3 moveDirection = navAgent.velocity.normalized;
-        monster.MonsterAnimator.SetFloat(SlimeAnimParams.MoveX, moveDirection.x);
-        monster.MonsterAnimator.SetFloat(SlimeAnimParams.MoveZ, moveDirection.z);
-        // 设置移动状态
-        float currentSpeed = navAgent.velocity.magnitude;
-        monster.MonsterAnimator.SetFloat(SlimeAnimParams.Speed, currentSpeed);
-        monster.MonsterAnimator.SetBool(SlimeAnimParams.IsRunning, currentSpeed > runThreshold);
+        if(monster.currentHealth<=0) {
+            return;
+        }
+        if(monster.IsDead || !IsAgentValid()) return;
+
+        monster.UpdateMovementAnimation();
         
-        // 设置战斗状态
         bool isInCombat = IsPlayerInRange(monster.DetectionRange);
-        monster.MonsterAnimator.SetBool(SlimeAnimParams.IsInCombat, isInCombat);
         //更新Ai行为
         if(isInCombat){
-            // HandleCombatState();
+            ChasePlayer();
             HandleAttackState();
             monster.MonsterAnimator.SetTrigger(SlimeAnimParams.IdleBattleTrigger);
         }
@@ -45,9 +41,6 @@ public class SlimeAI : MonsterAI
             PatrolBehavior();
             monster.MonsterAnimator.SetTrigger(SlimeAnimParams.IdleNormalTrigger);
         }
-
-        // 控制移动速度
-        navAgent.speed = currentSpeed > runThreshold ? runSpeed : walkSpeed;
     }
     private void HandleAttackState()
     {
@@ -67,22 +60,27 @@ public class SlimeAI : MonsterAI
     }
     private void CheckSpecialAbility()
     {
-        if(slime.CurrentHp <= slime.MaxHp * splitHealthThreshold)
+        if(slime.currentHealth <= slime.maxHP * splitHealthThreshold)
         {
             slime.SpecialAbility();
         }
     }
     private void PatrolBehavior()
     {
+        if (!IsAgentValid()) return;
+        float originalStoppingDistance = navAgent.stoppingDistance;
+        navAgent.stoppingDistance = 0.5f;
+
         if(!navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance)
         {
-            Vector3 randomPoint = transform.position + Random.insideUnitSphere * 10f;
+            Vector3 randomPoint = transform.position + Random.insideUnitSphere * 5f;
             NavMeshHit hit;
             if(NavMesh.SamplePosition(randomPoint, out hit, 10f, NavMesh.AllAreas))
             {
                 navAgent.SetDestination(hit.position);
             }
         }
+        navAgent.stoppingDistance = originalStoppingDistance;
     }
     protected override void ChasePlayer()
     {
@@ -90,6 +88,14 @@ public class SlimeAI : MonsterAI
         {
             navAgent.SetDestination(player.position);
             navAgent.speed = monster.MoveSpeed * 1.5f; // 追击时加速
+        }
+    }
+    private void OnDrawGizmos()
+    {
+        if(navAgent != null && navAgent.hasPath)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, navAgent.destination);
         }
     }
 }

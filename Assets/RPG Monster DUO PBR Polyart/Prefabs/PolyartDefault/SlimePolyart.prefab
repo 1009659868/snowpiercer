@@ -403,7 +403,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 9bbcf96c9a254c5ba654027c656d7b39, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -442,54 +442,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961ff2caf5bca4646a411ab4ccfb18d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
-  maxHp: 100
-  attackPower: 10
-  moveSpeed: 3
-  attackRange: 2
-  detectionRange: 10
-  OnDeath:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7400000, guid: 35bb20ecf5de4fdd8dcd8e28e4053f3d, type: 3}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+  maxHP: 10
+  currentHealth: 10
+  damagePopupPrefab: {fileID: 9002054953519219896, guid: 614827d73c63aa744bbcc3ff8ef2b459,
+    type: 3}
   OnTakeDamage:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7400000, guid: b2c5dad1c2b246f48024751ad65ef02b, type: 3}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 7400000, guid: ced1d66978a144d0b646ff621ebe620c, type: 3}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  type: 0
+  attackPower: 10
+  moveSpeed: 4
+  attackRange: 2
+  detectionRange: 30
+  knockbackForce: 10
+  knockbackDuration: 0.2
+  navAgent: {fileID: 0}
   jumpForce: 8
   splashDamage: 20
   miniSlimePrefab: {fileID: 7153141402127884706}
@@ -503,12 +473,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 7153141402127884706}
   m_Enabled: 0
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_AngularSpeed: 400
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -563,9 +533,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2.550796
+  m_Height: 2.0829682
   m_Direction: 1
-  m_Center: {x: 0, y: 0.7753955, z: 0}
+  m_Center: {x: 0, y: 1.0093094, z: 0}
 --- !u!1 &7446019047767849115
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,10 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
 {
     public static TimeManager _instance;
+
+    [Header("UI Elements")]
+    [SerializeField] private Image outerProgressBar;
+    [SerializeField] private Gradient dayNightGradient; // 渐变变量
+    [SerializeField] private float colorTransitionSpeed = 3f; // 渐变速度
 
     [Header("Day/Night Cycle")]
     public Light sunLight;
@@ -28,10 +34,32 @@ public class TimeManager : MonoBehaviour
     {
         _instance= this;
         currentTimeOfDay =startTimeOfDay;
+        InitializeUI();
         UpdateSunAndNight();
     }
     void Update(){
         UpdateDayNightCycle();
+        UpdateUIElements();
+    }
+    private void InitializeUI(){
+        if(outerProgressBar!=null){
+            outerProgressBar.type = Image.Type.Filled;
+            outerProgressBar.fillMethod = Image.FillMethod.Radial360;
+            outerProgressBar.fillOrigin = (int)Image.Origin360.Top;
+            outerProgressBar.fillClockwise = true;
+        }
+    }
+    private void UpdateUIElements(){
+        if(outerProgressBar!=null){
+            outerProgressBar.fillAmount = currentTimeOfDay;
+            Color targetColor = dayNightGradient.Evaluate(currentTimeOfDay);//颜色渐变
+            outerProgressBar.color = Color.Lerp(
+                outerProgressBar.color,
+                targetColor,
+                Time.deltaTime*colorTransitionSpeed
+            );
+        
+        }
     }
     private void UpdateDayNightCycle()
     {

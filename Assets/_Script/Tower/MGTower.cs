@@ -41,7 +41,7 @@ public class MGTower : Tower
 
     protected override void Shoot()
     {
-        var bullet = BulletPool.Instance.GetBullet(
+        var bullet = BulletPool._instance.GetBullet(
             bulletType,
             bulletPoint.position,
             Quaternion.LookRotation(CalculateSpread()),

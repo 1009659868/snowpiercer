@@ -24,22 +24,36 @@ public abstract class MonsterAI : MonoBehaviour
     {
         StartCoroutine(AIUpdate());
     }
-
-    protected virtual IEnumerator AIUpdate()
+    protected bool IsAgentValid()
+    {
+        return navAgent != null && 
+               navAgent.enabled && 
+               navAgent.isOnNavMesh;
+    }
+    public virtual IEnumerator AIUpdate()
     {
         while(isActive)
         {
-            UpdateAIState();
+            if(IsAgentValid())
+                UpdateAIState();
             yield return new WaitForSeconds(updateInterval);
         }
     }
-    protected abstract void UpdateAIState();
+    public abstract void UpdateAIState();
     protected virtual void ChasePlayer()
     {
         if(navAgent.isActiveAndEnabled)
         {
+            if(navAgent.velocity.magnitude > 0.1f){
+                Quaternion lookRotation = Quaternion.LookRotation(navAgent.velocity.normalized);
+                transform.rotation = Quaternion.Slerp(
+                    transform.rotation,
+                    lookRotation,
+                    Time.deltaTime * navAgent.angularSpeed
+                );
+            }
             navAgent.SetDestination(player.position);
-            navAgent.isStopped = false;
+            navAgent.speed = monster.MoveSpeed * 1.5f;
         }
     }
     protected virtual void StopMovement()

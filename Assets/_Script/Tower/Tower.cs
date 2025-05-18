@@ -41,7 +41,7 @@ public abstract class Tower :MonoBehaviour
     }
     // 射击方法，子类可重写射击逻辑
     protected virtual void Shoot(){
-        var bullet= BulletPool.Instance.GetBullet(
+        var bullet= BulletPool._instance.GetBullet(
             bulletType,
             bulletPoint.position,
             bulletPoint.rotation,
